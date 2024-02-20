@@ -58,8 +58,8 @@ function onSubmit(e?: Event) {
         </div>
 
         <!-- Layout inspired by Stripe -->
-        <div class="flex w-10 justify-center items-center">
-          <div className="w-3 md:w-6 h-1 md:h-2 rounded-full bg-border" />
+        <div class="flex w-10 md:20 justify-center items-center">
+          <div class="w-3 md:w-6 h-1 md:h-2 rounded-full bg-border"></div>
         </div>
 
         <div class="flex">
