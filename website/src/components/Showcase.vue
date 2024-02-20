@@ -40,8 +40,10 @@ onUnmounted(() => {
   clearTimeout(t2)
 })
 
-function onSubmit(e?: Event) {
-  e?.preventDefault?.()
+function onSubmit(e?: Event | string) {
+  if (typeof e !== 'string') {
+    e?.preventDefault?.()
+  }
 
   if (input.value === '123456') {
     hasGuessed.value = true
