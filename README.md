@@ -1,5 +1,7 @@
 # OTP Input for Vue
 
+One time passcode Input. Accessible & unstyled. Based on the [React version](https://github.com/guilhermerodz/input-otp) by [guilhermerodz](https://github.com/guilhermerodz).
+
 ## Installation
 
 ```bash
@@ -8,22 +10,19 @@ npm install vue-input-otp
 
 ## Usage
 
-The example below uses `tailwindcss`:
+The example below uses `tailwindcss`, `shadcn-vue`:
 
 ```vue
 <script setup lang="ts">
 import { OTPInput } from 'vue-input-otp'
-import { ref } from 'vue'
-
-const code = ref()
+import Slot from './Slot.vue'
 </script>
 
 <template>
   <OTPInput
-    v-slot="{ slots }"
-    v-model="code"
     :maxlength="6"
     container-class="group flex items-center has-[:disabled]:opacity-30"
+    v-slot="{ slots }"
   >
     <div class="flex">
       <Slot v-for="(slot, idx) in slots.slice(0, 3)" v-bind="slot" :key="idx" />
@@ -43,6 +42,7 @@ const code = ref()
 
 ```vue
 <script setup lang="ts">
+// Slot.vue
 defineProps<{
   char: string | null
   isActive: boolean
@@ -59,6 +59,7 @@ defineProps<{
     <div v-if="char !== null">
       {{ char }}
     </div>
+
     <!-- Emulate a Fake Caret -->
     <div v-if="char === null && isActive" class="absolute pointer-events-none inset-0 flex items-center justify-center animate-caret-blink">
       <div class="w-px h-8 bg-white" />
@@ -85,6 +86,10 @@ const config = {
   },
 }
 ```
+
+##
+
+There's currently no native OTP/2FA/MFA input in HTML, which means people are either going with 1. a simple input design or 2. custom designs like this one. This library works by rendering an invisible input as a sibling of the slots, contained by a `relative`ly positioned parent (the container root called OTPInput).
 
 ## License
 
