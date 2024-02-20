@@ -16,24 +16,24 @@ const props = withDefaults(defineProps<OTPInputProps>(), {
   allowNavigation: true,
 })
 
-const emit = defineEmits([
-  'complete',
-  'select',
-  'change',
-  'input',
-  'keydown',
-  'keyup',
-  'focus',
-  'blur',
-  'mouseover',
-  'mouseleave',
-  'mousedown',
-  'paste',
-  'touchend',
-  'touchmove',
-  'click',
-  'dblclick',
-])
+const emit = defineEmits<{
+  (event: 'complete', value: string): void;
+  (event: 'change', value: string): void;
+  (event: 'select', e: Event): void;
+  (event: 'input', e: Event): void;
+  (event: 'keydown', e: KeyboardEvent): void;
+  (event: 'keyup', e: KeyboardEvent): void;
+  (event: 'focus', e: FocusEvent): void;
+  (event: 'blur', e: FocusEvent): void;
+  (event: 'mouseover', e: MouseEvent): void;
+  (event: 'mouseleave', e: MouseEvent): void;
+  (event: 'mousedown', e: MouseEvent): void;
+  (event: 'paste', e: ClipboardEvent): void;
+  (event: 'touchend', e: TouchEvent): void;
+  (event: 'touchmove', e: TouchEvent): void;
+  (event: 'click', e: MouseEvent): void;
+  (event: 'dblclick', e: MouseEvent): void;
+}>()
 
 const internalValue = defineModel({ default: '' })
 
@@ -278,7 +278,7 @@ function onContainerClick(e: MouseEvent) {
   inputRef.value.focus()
 }
 
-function onTouch(e: Event) {
+function onTouch(e: TouchEvent) {
   const isFocusing = document.activeElement === e.currentTarget
   if (isFocusing) {
     setTimeout(() => {
@@ -289,7 +289,7 @@ function onTouch(e: Event) {
   emit('touchend', e)
 }
 
-function onDoubleClick(e: Event) {
+function onDoubleClick(e: MouseEvent) {
   const lastClickTimestamp = inputRef.value?.__metadata__?.lastClickTimestamp
 
   const isFocusing = document.activeElement === e.currentTarget
