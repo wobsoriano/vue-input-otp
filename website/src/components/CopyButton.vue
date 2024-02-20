@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { CheckIcon, CopyIcon } from '@radix-icons/vue'
-import { Button } from './ui/button';
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
+import { Button } from './ui/button'
 
 const hasCopied = ref(false)
 
 function copyToClipboardWithMeta(value: string) {
   window && window.isSecureContext && navigator.clipboard.writeText(value)
-  hasCopied.value = true;
+  hasCopied.value = true
 }
 
 watch(hasCopied, () => {
@@ -29,4 +29,3 @@ watch(hasCopied, () => {
     <CopyIcon v-else class="h-3 w-3" />
   </Button>
 </template>
-

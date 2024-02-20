@@ -54,7 +54,6 @@ function onSubmit(e?: Event) {
       allow-navigation
       :pattern="REGEXP_ONLY_DIGITS"
       container-class="group flex items-center"
-      @complete="onSubmit"
     >
       <div class="flex">
         <Slot

@@ -3,8 +3,8 @@ import { PageActions, PageHeader, PageHeaderDescription, PageHeaderHeading } fro
 import { GitHub } from './Icons'
 import Showcase from './Showcase.vue'
 import { buttonVariants } from './ui/button'
-import { cn } from '@/lib/utils'
 import CopyButton from './CopyButton.vue'
+import { cn } from '@/lib/utils'
 
 const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
 </script>
