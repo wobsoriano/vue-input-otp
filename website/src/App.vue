@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Page from './components/Page.vue'
-import SiteHeader from './components/SiteHeader.vue';
+import SiteFooter from './components/SiteFooter.vue'
+import SiteHeader from './components/SiteHeader.vue'
 </script>
 
 <template>
@@ -9,5 +10,6 @@ import SiteHeader from './components/SiteHeader.vue';
     <main class="flex-1 flex flex-col">
       <Page />
     </main>
+    <SiteFooter />
   </div>
 </template>

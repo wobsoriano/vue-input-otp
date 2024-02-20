@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { cn } from '@/lib/utils';
-import { PageHeader, PageHeaderDescription, PageHeaderHeading } from './PageHeader';
-import Showcase from './Showcase.vue';
+import { PageActions, PageHeader, PageHeaderDescription, PageHeaderHeading } from './PageHeader'
+import { GitHub } from './Icons'
+import Showcase from './Showcase.vue'
+import { buttonVariants } from './ui/button'
+import { cn } from '@/lib/utils'
 
 const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
 </script>
@@ -29,6 +31,36 @@ const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
         One-time password input component for Vue. Accessible. Unstyled.
         Customizable. Open Source.
       </PageHeaderDescription>
+
+      <PageActions
+        :class="cn(
+          fadeUpClass,
+          'lg:motion-safe:[animation-delay:3000ms]',
+        )"
+      >
+        <div :class="buttonVariants({ variant: 'outline' })">
+          <div class="text-muted-foreground pr-1">
+            <span class="text-foreground">npm</span> install vue-input-otp
+          </div>
+          <!-- <CopyNpmCommandButton
+            commands={{
+              __npmCommand__: 'npm install input-otp',
+              __yarnCommand__: 'yarn add input-otp',
+              __pnpmCommand__: 'pnpm add input-otp',
+              __bunCommand__: 'bun add input-otp',
+            }}
+          /> -->
+        </div>
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://github.com/wobsoriano/vue-input-otp"
+          :class="cn(buttonVariants({ variant: 'outline' }))"
+        >
+          <GitHub class="mr-2 h-4 w-4" />
+          GitHub
+        </a>
+      </PageActions>
     </PageHeader>
   </div>
 </template>
