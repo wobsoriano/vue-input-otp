@@ -171,9 +171,8 @@ function _changeListener(e: Event) {
 }
 
 // Fix iOS pasting
-function _pasteListener(e: Event) {
-  // @ts-expect-error: TODO
-  const content = e.clipboardData.getData('text/plain')
+function _pasteListener(e: ClipboardEvent) {
+  const content = e.clipboardData?.getData('text/plain')
   e.preventDefault()
 
   const start = inputRef.value?.selectionStart!
@@ -194,8 +193,6 @@ function _pasteListener(e: Event) {
   const _start = Math.min(newValue.length, props.maxlength - 1)
   const _end = newValue.length
   inputRef.value?.setSelectionRange(_start, _end)
-  // setMirrorSelectionStart(_start)
-  // setMirrorSelectionEnd(_end)
   mirrorSelectionStart.value = _start
   mirrorSelectionEnd.value = _end
 }
