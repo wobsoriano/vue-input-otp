@@ -91,6 +91,11 @@ onMounted(() => {
   const resizeObserver = new ResizeObserver(updateRootHeight)
   resizeObserver.observe(el)
 
+  _selectListener()
+  setTimeout(() => {
+    isFocused.value = document.activeElement === inputRef.value
+  }, 20)
+
   onUnmounted(() => {
     resizeObserver.disconnect()
     document.head.removeChild(styleEl)
