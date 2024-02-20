@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = defineProps<{
   char: string | null
@@ -35,7 +35,7 @@ const willAnimateCaret = computed(() => props.animateIdx === 2)
     <div
       v-if="isActive && char === null"
       :class="{
-        'lg:opacity-0 lg:animate-fade-in': willAnimateCaret
+        'lg:opacity-0 lg:animate-fade-in': willAnimateCaret,
       }"
     >
       <!-- Fake Caret -->

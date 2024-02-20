@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs, watch } from 'vue'
-import type { OTPInputProps } from './types'
+import { computed, onMounted, onUnmounted, ref, useAttrs, watch } from 'vue'
+import type { Metadata, OTPInputProps } from './types'
 import { SelectionType } from './types'
 import { REGEXP_ONLY_DIGITS } from './regexp'
 import { syncTimeouts } from './sync-timeouts'
@@ -11,14 +11,14 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<OTPInputProps>(), {
-  inputmode: 'numeric',
   pattern: REGEXP_ONLY_DIGITS,
+  inputmode: 'numeric',
   allowNavigation: true,
-  autofocus: false,
 })
 
 const emit = defineEmits([
   'complete',
+  'select',
   'change',
   'input',
   'keydown',
@@ -28,25 +28,75 @@ const emit = defineEmits([
   'mouseover',
   'mouseleave',
   'mousedown',
+  'paste',
+  'touchend',
+  'touchmove',
+  'click',
+  'dblclick',
 ])
 
 const internalValue = defineModel({ default: '' })
 
-// Workarounds
 const regexp = computed(() => props.pattern
   ? typeof props.pattern === 'string'
     ? new RegExp(props.pattern)
     : props.pattern
   : null)
 
-const inputRef = ref<HTMLInputElement | null>(null)
+const inputRef = ref<HTMLInputElement & { __metadata__?: Metadata } | null>(null)
 
 defineExpose({
-  ref: inputRef
+  ref: inputRef,
+})
+
+function mutateInputRefAndReturn() {
+  const el = inputRef.value
+
+  if (!el)
+    return el
+
+  const _select = el.select.bind(el)
+  el.select = () => {
+    if (!props.allowNavigation) {
+      // Cannot select all chars as navigation is disabled
+      return
+    }
+
+    _select()
+    // Workaround proxy to update UI as native `.select()` does not trigger focus event
+    mirrorSelectionStart.value = 0
+    mirrorSelectionEnd.value = el.value.length
+  }
+
+  return el
+}
+
+onMounted(() => {
+  const el = mutateInputRefAndReturn()!
+
+  const styleEl = document.createElement('style')
+  document.head.appendChild(styleEl)
+  const styleSheet = styleEl.sheet
+  styleSheet?.insertRule(
+    '[data-input-otp]::selection { background: transparent !important; }',
+  )
+
+  const updateRootHeight = () => {
+    if (el)
+      el.style.setProperty('--root-height', `${el.clientHeight}px`)
+  }
+  updateRootHeight()
+  const resizeObserver = new ResizeObserver(updateRootHeight)
+  resizeObserver.observe(el)
+
+  onUnmounted(() => {
+    resizeObserver.disconnect()
+    document.head.removeChild(styleEl)
+  })
 })
 
 /** Mirrors for UI rendering purpose only */
-const isHoveringContainer = ref(false)
+const isHoveringInput = ref(false)
 const isFocused = ref(false)
 const mirrorSelectionStart = ref<number | null>(null)
 const mirrorSelectionEnd = ref<number | null>(null)
@@ -118,6 +168,36 @@ function _changeListener(e: Event) {
   }
 
   emit('change', (e.currentTarget as any).value)
+}
+
+// Fix iOS pasting
+function _pasteListener(e: Event) {
+  // @ts-expect-error: TODO
+  const content = e.clipboardData.getData('text/plain')
+  e.preventDefault()
+
+  const start = inputRef.value?.selectionStart!
+  const end = inputRef.value?.selectionEnd!
+
+  const isReplacing = start !== end
+
+  const newValueUncapped = isReplacing
+    ? internalValue.value.slice(0, start) + content + internalValue.value.slice(end) // Replacing
+    : internalValue.value.slice(0, start) + content + internalValue.value.slice(start) // Inserting
+  const newValue = newValueUncapped.slice(0, props.maxlength)
+
+  if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue))
+    return
+
+  emit('change', newValue)
+
+  const _start = Math.min(newValue.length, props.maxlength - 1)
+  const _end = newValue.length
+  inputRef.value?.setSelectionRange(_start, _end)
+  // setMirrorSelectionStart(_start)
+  // setMirrorSelectionEnd(_end)
+  mirrorSelectionStart.value = _start
+  mirrorSelectionEnd.value = _end
 }
 
 function _keyDownListener(e: KeyboardEvent) {
@@ -198,6 +278,34 @@ function onContainerClick(e: MouseEvent) {
   inputRef.value.focus()
 }
 
+function onTouch(e: Event) {
+  const isFocusing = document.activeElement === e.currentTarget
+  if (isFocusing) {
+    setTimeout(() => {
+      _selectListener()
+    }, 50)
+  }
+
+  emit('touchend', e)
+}
+
+function onDoubleClick(e: Event) {
+  const lastClickTimestamp = inputRef.value?.__metadata__?.lastClickTimestamp
+
+  const isFocusing = document.activeElement === e.currentTarget
+  if (
+    lastClickTimestamp !== undefined &&
+    isFocusing &&
+    Date.now() - lastClickTimestamp <= 300 // Fast enough click
+  ) {
+    // @ts-expect-error: TODO
+    e.currentTarget.setSelectionRange(0, e.currentTarget.value.length)
+    syncTimeouts(_selectListener)
+  }
+
+  emit('dblclick', e)
+}
+
 const slots = computed(() => {
   return Array.from({ length: Number(props.maxlength) }).map((_, slotIdx) => {
     const isActive
@@ -236,11 +344,11 @@ const inputProps = computed(() => {
     :style="{ cursor: disabled ? 'default' : 'text' }"
     :class="containerClass"
     @mouseover="(e) => {
-      isHoveringContainer = true
+      isHoveringInput = true
       emit('mouseover', e)
     }"
     @mouseleave="(e) => {
-      isHoveringContainer = true
+      isHoveringInput = true
       emit('mouseleave', e)
     }"
     @mousedown="(e) => {
@@ -251,15 +359,57 @@ const inputProps = computed(() => {
       emit('mousedown', e)
     }"
   >
-    <slot :slots="slots" :is-focused="isFocused" :is-hovering="!disabled && isHoveringContainer" />
+    <slot :slots="slots" :is-focused="isFocused" :is-hovering="!disabled && isHoveringInput" />
 
     <input
       ref="inputRef"
       v-model="internalValue"
-      style="position: absolute; inset: 0; opacity: 0; pointer-events: none; outline: none !important;"
+      data-input-otp
+      :style="{
+        position: 'absolute',
+        inset: 0,
+        opacity: '1', // Mandatory for iOS hold-paste
+
+        color: 'transparent',
+        pointerEvents: 'all',
+        background: 'transparent',
+        caretColor: 'transparent',
+        border: '0 solid transparent',
+        outline: '0 solid transparent',
+        lineHeight: '1',
+        letterSpacing: '-.5em',
+        fontSize: 'var(--root-height)',
+      }"
       v-bind="inputProps"
       @change="_changeListener"
-      @select="_selectListener"
+      @select="(e) => {
+        _selectListener()
+        emit('select', e)
+      }"
+      @mouseover="(e) => {
+        isHoveringInput = true
+        emit('mouseover', e)
+      }"
+      @mouseleave="(e) => {
+        isHoveringInput = false
+        emit('mouseleave', e)
+      }"
+      @paste="(e) => {
+        _pasteListener(e)
+        emit('paste', e)
+      }"
+      @touchend="onTouch"
+      @touchmove="onTouch"
+      @click="(e) => {
+        inputRef!.__metadata__ = Object.assign(
+          {},
+          inputRef?.__metadata__,
+          { lastClickTimestamp: Date.now() },
+        )
+
+        emit('click', e)
+      }"
+      @dblclick="onDoubleClick"
       @input="(e) => {
         syncTimeouts(_selectListener)
 
@@ -272,14 +422,13 @@ const inputProps = computed(() => {
         emit('keydown', e)
       }"
       @keyup="(e) => {
-        _keyDownListener(e)
         syncTimeouts(_selectListener)
 
         emit('keyup', e)
       }"
       @focus="(e) => {
         if (inputRef) {
-          const start = Math.min(inputRef.value.length, maxlength! - 1)
+          const start = Math.min(inputRef.value.length, maxlength - 1)
           const end = inputRef.value.length
           inputRef.setSelectionRange(start, end)
           mirrorSelectionStart = start

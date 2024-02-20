@@ -48,3 +48,7 @@ export enum SelectionType {
   CHAR = 1,
   MULTI = 2,
 }
+
+export interface Metadata {
+  lastClickTimestamp: number
+}

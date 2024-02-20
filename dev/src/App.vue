@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
-import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import Slot from './Slot.vue'
 
 const input = ref('12')
@@ -9,9 +9,9 @@ const disabled = ref(false)
 
 onMounted(() => {
   const isMobile = window.matchMedia('(max-width: 1023px)').matches
-  if (!isMobile) {
+  if (!isMobile)
     disabled.value = true
-  }
+
   const t1 = setTimeout(() => {
     disabled.value = false
   }, 1_900)
@@ -35,17 +35,17 @@ function onSubmit(e?: Event) {
 
 <template>
   <main class="flex-1 flex flex-col">
-    <form @submit="onSubmit" class="mx-auto flex max-w-[980px] justify-center pt-6 pb-4">
+    <form class="mx-auto flex max-w-[980px] justify-center pt-6 pb-4" @submit="onSubmit">
       <OTPInput
-        @complete="onSubmit"
-        v-slot="{ slots, isFocused }"
         ref="inputRef"
+        v-slot="{ slots, isFocused }"
         v-model="input"
+        :disabled="disabled"
         :maxlength="6"
         allow-navigation
         :pattern="REGEXP_ONLY_DIGITS"
         container-class="group flex items-center"
-        autofocus
+        @complete="onSubmit"
       >
         <div class="flex">
           <Slot
@@ -59,14 +59,14 @@ function onSubmit(e?: Event) {
 
         <!-- Layout inspired by Stripe -->
         <div class="flex w-10 justify-center items-center">
-          <div className="w-3 md:w-6 h-1 md:h-2 rounded-full bg-border"></div>
+          <div className="w-3 md:w-6 h-1 md:h-2 rounded-full bg-border" />
         </div>
-        
+
         <div class="flex">
           <Slot
             v-for="(slot, idx) in slots.slice(3)"
-            :is-focused="isFocused"
             :key="idx"
+            :is-focused="isFocused"
             v-bind="slot"
           />
         </div>
