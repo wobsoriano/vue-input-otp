@@ -299,8 +299,8 @@ function onDoubleClick(e: MouseEvent) {
     && isFocusing
     && Date.now() - lastClickTimestamp <= 300 // Fast enough click
   ) {
-    // @ts-expect-error: TODO
-    e.currentTarget.setSelectionRange(0, e.currentTarget.value.length)
+    const currentTarget = e.currentTarget as HTMLInputElement
+    currentTarget.setSelectionRange(0, currentTarget.value.length)
     syncTimeouts(_selectListener)
   }
 
@@ -329,9 +329,10 @@ const slots = computed(() => {
 
 const attrs = useAttrs()
 const inputProps = computed(() => {
-  const { containerClass: _, value: _value, modelValue, allowNavigation, ...rest } = props
+  // Don't want to include this in the input element
+  const { containerClass, value, modelValue, allowNavigation, ...rest } = props
   return {
-    // ...attrs,
+    ...attrs, // putting attrs for now until I can extract the input props from Vue
     ...rest,
     autocomplete: props.autocomplete || 'one-time-code',
     pattern: regexp.value?.source,
