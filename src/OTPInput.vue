@@ -216,7 +216,7 @@ const slots = computed(() => {
 
 const attrs = useAttrs()
 const inputProps = computed(() => {
-  const { containerClass: _, ...rest } = props
+  const { containerClass: _, value: _value, ...rest } = props
   return {
     ...attrs,
     ...rest,
