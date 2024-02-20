@@ -13,12 +13,15 @@ The example below uses `tailwindcss`:
 ```vue
 <script setup lang="ts">
 import { OTPInput } from 'vue-input-otp'
+import { ref } from 'vue'
+
+const code = ref()
 </script>
 
 <template>
   <OTPInput
     v-slot="{ slots }"
-    v-model="input"
+    v-model="code"
     :maxlength="6"
     container-class="group flex items-center has-[:disabled]:opacity-30"
   >

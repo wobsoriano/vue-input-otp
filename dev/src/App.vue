@@ -16,6 +16,7 @@ watchEffect(() => {
     v-model="input"
     :maxlength="6"
     container-class="group flex items-center has-[:disabled]:opacity-30"
+    autofocus
   >
     <div class="flex">
       <Slot v-for="(slot, idx) in slots.slice(0, 3)" v-bind="slot" :key="idx" />
