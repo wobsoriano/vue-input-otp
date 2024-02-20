@@ -4,6 +4,7 @@ import { GitHub } from './Icons'
 import Showcase from './Showcase.vue'
 import { buttonVariants } from './ui/button'
 import { cn } from '@/lib/utils'
+import CopyButton from './CopyButton.vue'
 
 const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
 </script>
@@ -42,14 +43,7 @@ const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
           <div class="text-muted-foreground pr-1">
             <span class="text-foreground">npm</span> install vue-input-otp
           </div>
-          <!-- <CopyNpmCommandButton
-            commands={{
-              __npmCommand__: 'npm install input-otp',
-              __yarnCommand__: 'yarn add input-otp',
-              __pnpmCommand__: 'pnpm add input-otp',
-              __bunCommand__: 'bun add input-otp',
-            }}
-          /> -->
+          <CopyButton />
         </div>
         <a
           target="_blank"

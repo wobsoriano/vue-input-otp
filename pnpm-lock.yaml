@@ -8,6 +8,9 @@ devDependencies:
   '@antfu/eslint-config':
     specifier: ^2.6.4
     version: 2.6.4(@vue/compiler-sfc@3.4.19)(eslint@8.56.0)(typescript@5.3.3)
+  '@radix-icons/vue':
+    specifier: ^1.0.0
+    version: 1.0.0(vue@3.4.19)
   '@types/node':
     specifier: ^20.11.19
     version: 20.11.19
@@ -766,6 +769,14 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@radix-icons/vue@1.0.0(vue@3.4.19):
+    resolution: {integrity: sha512-gKWWk9tTK/laDRRNe5KLLR8A0qUwx4q4+DN8Fq48hJ904u78R82ayAO3TrxbNLgyn2D0h6rRiGdLzQWj7rPcvA==}
+    peerDependencies:
+      vue: '>= 3'
+    dependencies:
+      vue: 3.4.19(typescript@5.3.3)
+    dev: true
 
   /@rollup/plugin-alias@5.1.0(rollup@3.29.4):
     resolution: {integrity: sha512-lpA3RZ9PdIG7qqhEfv79tBffNaoDuukFDrmhLqg9ifv99u/ehn+lOg30x2zmhf8AQqQUZaMk/B9fZraQ6/acDQ==}
