@@ -47,7 +47,7 @@ function onSubmit(e?: Event | string) {
 </script>
 
 <template>
-  <div v-if="hasGuessed" v-confetti />
+  <div v-if="hasGuessed" v-confetti="{ duration: 2500, particleShape: 'circles' }" />
   <form class="mx-auto flex max-w-[980px] justify-center pt-6 pb-4" v-bind="$attrs" @submit="onSubmit">
     <OTPInput
       ref="inputRef"
