@@ -23,8 +23,8 @@ const willAnimateCaret = computed(() => props.animateIdx === 2)
       class="duration-1000"
       :class="{
         'lg:opacity-0 lg:animate-fade-in': willAnimateChar,
-        '[animation-delay:1.5s]': animateIdx === 0,
-        '[animation-delay:2s]': animateIdx === 1,
+        'lg:[animation-delay:1.5s]': animateIdx === 0,
+        'lg:[animation-delay:2s]': animateIdx === 1,
       }"
     >
       <div v-if="char">
