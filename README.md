@@ -1,70 +1,89 @@
-# vue-sfc-unbuild
+# OTP Input for Vue
 
-Bundleless Vue 2/3 component library starter.
-
-Features:
-
-- Build with [unbuild](https://github.com/unjs/unbuild)
-- File-to-file transpilation via [mkdist](https://github.com/unjs/mkdist)
-- Playground with [vite](https://vitejs.dev/)
-- Sample SFC to kick-start development
-
-## Generate a project
-
-Vue 3
+## Installation
 
 ```bash
-npx degit wobsoriano/vue-sfc-unbuild library-name
-```
-
-Vue 2
-
-```bash
-npx degit wobsoriano/vue-sfc-unbuild#vue2 library-name
-```
-
-## Setup
-
-```bash
-# install dependencies
-npm install
-
-# start the dev app with hot reload, great for testing components
-npm run dev
-
-# build the library, available under dist
-npm run build
-
-# build the dev app, available under dev/dist
-npm run dev:build
-
-# preview the dev app locally from dev/dist
-npm run dev:preview
+npm install vue-input-otp
 ```
 
 ## Usage
 
-Install all components (as a plugin)
-
-```ts
-// src/main.ts
-
-import { createApp } from 'vue'
-import MyLibrary from 'my-library'
-
-import App from './App.vue'
-
-const app = createApp(App)
-app.use(MyLibrary)
-app.mount('#app')
-```
-
-Import some components
+The example below uses `tailwindcss`:
 
 ```vue
 <script setup lang="ts">
-import { Button, Card } from 'my-library/components'
+import { OTPInput } from 'vue-input-otp'
 </script>
+
+<template>
+  <OTPInput
+    :maxlength="6"
+    container-class="group flex items-center has-[:disabled]:opacity-30"
+    v-model="input"
+    v-slot="{ slots }"
+  >
+    <div class="flex">
+      <Slot v-bind="slot" :key="idx" v-for="(slot, idx) in slots.slice(0, 3)" />
+    </div>
+
+    <!-- Fake Dash. Inspired by Stripe's MFA input. -->
+    <div class="flex w-10 justify-center items-center">
+      <div class="w-3 h-1 rounded-full bg-border" />
+    </div>
+
+    <div class="flex">
+      <Slot v-bind="slot" :key="idx" v-for="(slot, idx) in slots.slice(3)" />
+    </div>
+  </OTPInput>
+</template>
+```
+
+```vue
+<script setup lang="ts">
+defineProps<{
+  char: string | null
+  isActive: boolean
+}>()
+</script>
+
+<template>
+  <div
+    :class="{
+      'relative w-10 h-14 text-[2rem]': true,
+      'flex items-center justify-center': true,
+      'transition-all duration-300': true,
+      'border-border border-y border-r first:border-l first:rounded-l-md last:rounded-r-md': true,
+      'group-hover:border-accent-foreground/20 group-focus-within:border-accent-foreground/20': true,
+      'outline outline-0 outline-accent-foreground/20': true,
+      'outline-4 outline-accent-foreground z-10': isActive
+    }"
+  >
+    <div v-if="char !== null">{{ char }}</div>
+    <!-- Emulate a Fake Caret -->
+    <div v-if="char === null && isActive" class="absolute pointer-events-none inset-0 flex items-center justify-center animate-caret-blink">
+      <div class="w-px h-8 bg-white" />
+    </div>
+  </div>
+</template>
+```
+
+```ts
+// tailwind.config.ts for the blinking caret animation.
+const config = {
+  theme: {
+    extend: {
+      keyframes: {
+        'caret-blink': {
+          '0%,70%,100%': { opacity: '1' },
+          '20%,50%': { opacity: '0' },
+        },
+      },
+      animation: {
+        'caret-blink': 'caret-blink 1.2s ease-out infinite',
+      },
+    },
+  },
+}
 ```
 
 ## License
