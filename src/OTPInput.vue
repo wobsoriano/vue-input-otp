@@ -294,9 +294,9 @@ function onDoubleClick(e: Event) {
 
   const isFocusing = document.activeElement === e.currentTarget
   if (
-    lastClickTimestamp !== undefined &&
-    isFocusing &&
-    Date.now() - lastClickTimestamp <= 300 // Fast enough click
+    lastClickTimestamp !== undefined
+    && isFocusing
+    && Date.now() - lastClickTimestamp <= 300 // Fast enough click
   ) {
     // @ts-expect-error: TODO
     e.currentTarget.setSelectionRange(0, e.currentTarget.value.length)

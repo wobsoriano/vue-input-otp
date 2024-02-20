@@ -89,7 +89,7 @@ module.exports = {
           from: { height: 'var(--radix-collapsible-content-height)' },
           to: { height: 0 },
         },
-        
+
         'fade-in': {
           from: {
             opacity: '0',

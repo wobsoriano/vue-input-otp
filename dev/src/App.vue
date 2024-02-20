@@ -1,31 +1,37 @@
 <script setup lang="ts">
 import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import Slot from './Slot.vue'
 
 const input = ref('12')
 const inputRef = ref<{ ref: HTMLInputElement } | null>(null)
 const disabled = ref(false)
 
+let t1: ReturnType<typeof setTimeout>
+let t2: ReturnType<typeof setTimeout>
+
 onMounted(() => {
   const isMobile = window.matchMedia('(max-width: 1023px)').matches
   if (!isMobile)
     disabled.value = true
 
-  const t1 = setTimeout(() => {
-    disabled.value = false
-  }, 1_900)
-  const t2 = setTimeout(
-    () => {
-      inputRef.value?.ref.focus()
-    },
-    isMobile ? 0 : 2_500,
-  )
-
-  onUnmounted(() => {
-    clearTimeout(t1)
-    clearTimeout(t2)
+  nextTick(() => {
+    t1 = setTimeout(() => {
+      disabled.value = false
+    }, 1_900)
+    t2 = setTimeout(
+      () => {
+        inputRef.value?.ref.focus()
+        console.log('focusing')
+      },
+      isMobile ? 0 : 2_500,
+    )
   })
+})
+
+onUnmounted(() => {
+  clearTimeout(t1)
+  clearTimeout(t2)
 })
 
 function onSubmit(e?: Event) {
@@ -59,7 +65,7 @@ function onSubmit(e?: Event) {
 
         <!-- Layout inspired by Stripe -->
         <div class="flex w-10 md:20 justify-center items-center">
-          <div class="w-3 md:w-6 h-1 md:h-2 rounded-full bg-border"></div>
+          <div class="w-3 md:w-6 h-1 md:h-2 rounded-full bg-border" />
         </div>
 
         <div class="flex">
