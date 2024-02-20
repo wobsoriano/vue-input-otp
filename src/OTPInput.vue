@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, watch, useAttrs } from 'vue'
+import { computed, ref, useAttrs, watch } from 'vue'
 import type { OTPInputProps } from './types'
 import { SelectionType } from './types'
-import { REGEXP_ONLY_DIGITS } from './regexp';
-import { syncTimeouts } from './sync-timeouts';
-
-const internalValue = defineModel({ default: '' })
+import { REGEXP_ONLY_DIGITS } from './regexp'
+import { syncTimeouts } from './sync-timeouts'
 
 defineOptions({
-  name: 'Input',
+  name: 'OTPInput',
   inheritAttrs: false,
 })
 
@@ -29,8 +27,10 @@ const emit = defineEmits([
   'blur',
   'mouseover',
   'mouseleave',
-  'mousedown'
+  'mousedown',
 ])
+
+const internalValue = defineModel({ default: '' })
 
 // Workarounds
 const regexp = computed(() => props.pattern
@@ -48,25 +48,22 @@ const mirrorSelectionStart = ref<number | null>(null)
 const mirrorSelectionEnd = ref<number | null>(null)
 
 watch([() => props.maxlength, internalValue], ([maxlength, value], [_, previousValue]) => {
-  if (!previousValue) {
+  if (!previousValue)
     return
-  }
-  
+
   if (
-    value !== previousValue &&
-    maxlength &&
-    previousValue.length < maxlength &&
-    value && 
-    value.length === maxlength
-  ) {
+    value !== previousValue
+    && maxlength
+    && previousValue.length < maxlength
+    && value
+    && value.length === maxlength
+  )
     emit('complete', value)
-  }
 }, { immediate: true })
 
 function _selectListener() {
-  if (!inputRef.value) {
+  if (!inputRef.value)
     return
-  }
 
   const _start = inputRef.value.selectionStart
   const _end = inputRef.value.selectionEnd
@@ -85,17 +82,18 @@ function _selectListener() {
       if (caretPos === 0) {
         start = 0
         end = 1
-      } else if (caretPos === internalValue.value.length) {
+      }
+      else if (caretPos === internalValue.value.length) {
         start = internalValue.value.length - 1
         end = internalValue.value.length
-      } else {
+      }
+      else {
         start = caretPos
         end = caretPos + 1
       }
 
-      if (start !== -1 && end !== -1) {
+      if (start !== -1 && end !== -1)
         inputRef.value.setSelectionRange(start, end)
-      }
     }
   }
 
@@ -107,9 +105,9 @@ function _selectListener() {
 
 function _changeListener(e: Event) {
   if (
-    (e.currentTarget as any).value.length > 0 &&
-    regexp.value &&
-    !regexp.value.test((e.currentTarget as any).value)
+    (e.currentTarget as any).value.length > 0
+    && regexp.value
+    && !regexp.value.test((e.currentTarget as any).value)
   ) {
     e.preventDefault()
     return
@@ -119,47 +117,45 @@ function _changeListener(e: Event) {
 }
 
 function _keyDownListener(e: KeyboardEvent) {
-  if (!inputRef.value) {
+  if (!inputRef.value)
     return
-  }
 
   const inputSel = [
     inputRef.value.selectionStart,
     inputRef.value.selectionEnd,
   ]
-  if (inputSel[0] === null || inputSel[1] === null) {
+  if (inputSel[0] === null || inputSel[1] === null)
     return
-  }
 
   let selectionType: SelectionType
-  if (inputSel[0] === inputSel[1]) {
+  if (inputSel[0] === inputSel[1])
     selectionType = SelectionType.CARET
-  } else if (inputSel[1] - inputSel[0] === 1) {
+  else if (inputSel[1] - inputSel[0] === 1)
     selectionType = SelectionType.CHAR
-  } else if (inputSel[1] - inputSel[0] > 1) {
+  else if (inputSel[1] - inputSel[0] > 1)
     selectionType = SelectionType.MULTI
-  } else {
+  else
     throw new Error('Could not determine OTPInput selection type')
-  }
 
   if (
-    e.key === 'ArrowLeft' ||
-    e.key === 'ArrowRight' ||
-    e.key === 'ArrowUp' ||
-    e.key === 'ArrowDown' ||
-    e.key === 'Home' ||
-    e.key === 'End'
+    e.key === 'ArrowLeft'
+    || e.key === 'ArrowRight'
+    || e.key === 'ArrowUp'
+    || e.key === 'ArrowDown'
+    || e.key === 'Home'
+    || e.key === 'End'
   ) {
     if (!props.allowNavigation) {
       e.preventDefault()
-    } else {
+    }
+    else {
       if (
-        e.key === 'ArrowLeft' &&
-        selectionType === SelectionType.CHAR &&
-        !e.shiftKey &&
-        !e.metaKey &&
-        !e.ctrlKey &&
-        !e.altKey
+        e.key === 'ArrowLeft'
+        && selectionType === SelectionType.CHAR
+        && !e.shiftKey
+        && !e.metaKey
+        && !e.ctrlKey
+        && !e.altKey
       ) {
         e.preventDefault()
 
@@ -170,15 +166,15 @@ function _keyDownListener(e: KeyboardEvent) {
       }
 
       if (
-        e.altKey &&
-        !e.shiftKey &&
-        (e.key === 'ArrowLeft' || e.key === 'ArrowRight')
+        e.altKey
+        && !e.shiftKey
+        && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')
       ) {
         e.preventDefault()
 
-        if (e.key === 'ArrowLeft') {
+        if (e.key === 'ArrowLeft')
           inputRef.value.setSelectionRange(0, Math.min(1, internalValue.value.length))
-        }
+
         if (e.key === 'ArrowRight') {
           inputRef.value.setSelectionRange(
             Math.max(0, internalValue.value.length - 1),
@@ -192,23 +188,22 @@ function _keyDownListener(e: KeyboardEvent) {
 
 function onContainerClick(e: MouseEvent) {
   e.preventDefault()
-  if (!inputRef.value) {
+  if (!inputRef.value)
     return
-  }
+
   inputRef.value.focus()
 }
 
 const slots = computed(() => {
   return Array.from({ length: Number(props.maxlength) }).map((_, slotIdx) => {
-    const isActive =
-      isFocused.value &&
-      mirrorSelectionStart.value !== null &&
-      mirrorSelectionEnd.value !== null &&
-      ((mirrorSelectionStart.value === mirrorSelectionEnd.value &&
-        slotIdx === mirrorSelectionStart.value) ||
-        (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
+    const isActive
+      = isFocused.value
+      && mirrorSelectionStart.value !== null
+      && mirrorSelectionEnd.value !== null
+      && ((mirrorSelectionStart.value === mirrorSelectionEnd.value
+      && slotIdx === mirrorSelectionStart.value)
+      || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
 
-    
     const char = internalValue.value[slotIdx] !== undefined ? internalValue.value[slotIdx] : null
 
     return {
@@ -252,49 +247,49 @@ const inputProps = computed(() => {
       emit('mousedown', e)
     }"
   >
-  <slot :slots="slots" :is-focused="isFocused" :is-hovering="!disabled && isHoveringContainer" />
-    
-  <input
-    style="position: absolute; inset: 0; opacity: 0; pointer-events: none; outline: none !important;"
-    @change="_changeListener"
-    @select="_selectListener"
-    v-model="internalValue"
-    ref="inputRef"
-    @input="(e) => {
-      syncTimeouts(_selectListener)
+    <slot :slots="slots" :is-focused="isFocused" :is-hovering="!disabled && isHoveringContainer" />
 
-      emit('input', e)
-    }"
-    @keydown="(e) => {
-      _keyDownListener(e)
-      syncTimeouts(_selectListener)
+    <input
+      ref="inputRef"
+      v-model="internalValue"
+      style="position: absolute; inset: 0; opacity: 0; pointer-events: none; outline: none !important;"
+      v-bind="inputProps"
+      @change="_changeListener"
+      @select="_selectListener"
+      @input="(e) => {
+        syncTimeouts(_selectListener)
 
-      emit('keydown', e)
-    }"
-    @keyup="(e) => {
-      _keyDownListener(e)
-      syncTimeouts(_selectListener)
+        emit('input', e)
+      }"
+      @keydown="(e) => {
+        _keyDownListener(e)
+        syncTimeouts(_selectListener)
 
-      emit('keyup', e)
-    }"
-    @focus="(e) => {
-      if (inputRef) {
-        const start = Math.min(inputRef.value.length, maxlength! - 1)
-        const end = inputRef.value.length
-        inputRef.setSelectionRange(start, end)
-        mirrorSelectionStart = start
-        mirrorSelectionEnd = end
-      }
-      isFocused = true
+        emit('keydown', e)
+      }"
+      @keyup="(e) => {
+        _keyDownListener(e)
+        syncTimeouts(_selectListener)
 
-      emit('focus', e)
-    }"
-    @blur="(e) => {
-      isFocused = false
+        emit('keyup', e)
+      }"
+      @focus="(e) => {
+        if (inputRef) {
+          const start = Math.min(inputRef.value.length, maxlength! - 1)
+          const end = inputRef.value.length
+          inputRef.setSelectionRange(start, end)
+          mirrorSelectionStart = start
+          mirrorSelectionEnd = end
+        }
+        isFocused = true
 
-      emit('blur', e)
-    }"
-    v-bind="inputProps"
-  />
+        emit('focus', e)
+      }"
+      @blur="(e) => {
+        isFocused = false
+
+        emit('blur', e)
+      }"
+    >
   </div>
 </template>
