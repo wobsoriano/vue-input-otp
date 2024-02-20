@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
 import { nextTick, onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import { vConfetti } from '@neoconfetti/vue';
 import Slot from './Slot.vue'
 
 const input = ref('12')
 const inputRef = ref<{ ref: HTMLInputElement } | null>(null)
+const hasGuessed = ref(false)
 const disabled = ref(false)
 
 let t1: ReturnType<typeof setTimeout>
@@ -40,10 +42,15 @@ onUnmounted(() => {
 
 function onSubmit(e?: Event) {
   e?.preventDefault?.()
+
+  if (input.value === '123456') {
+    hasGuessed.value = true
+  }
 }
 </script>
 
 <template>
+  <div v-if="hasGuessed" v-confetti />
   <form class="mx-auto flex max-w-[980px] justify-center pt-6 pb-4" @submit="onSubmit">
     <OTPInput
       ref="inputRef"
@@ -54,6 +61,7 @@ function onSubmit(e?: Event) {
       allow-navigation
       :pattern="REGEXP_ONLY_DIGITS"
       container-class="group flex items-center"
+      @complete="onSubmit"
     >
       <div class="flex">
         <Slot

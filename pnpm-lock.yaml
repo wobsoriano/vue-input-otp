@@ -8,6 +8,9 @@ devDependencies:
   '@antfu/eslint-config':
     specifier: ^2.6.4
     version: 2.6.4(@vue/compiler-sfc@3.4.19)(eslint@8.56.0)(typescript@5.3.3)
+  '@neoconfetti/vue':
+    specifier: ^2.2.1
+    version: 2.2.1
   '@radix-icons/vue':
     specifier: ^1.0.0
     version: 1.0.0(vue@3.4.19)
@@ -740,6 +743,10 @@ packages:
       cross-spawn: 7.0.3
       string-argv: 0.3.2
       type-detect: 4.0.8
+    dev: true
+
+  /@neoconfetti/vue@2.2.1:
+    resolution: {integrity: sha512-GXe5XoHlMK8VIxmxKuAgF9QQwRoDLmtiwVhONA9rzF+zOLGfOVLxo4OEDZqU9F0gJkB7U23BLlGJ3ouOb+kguw==}
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:
