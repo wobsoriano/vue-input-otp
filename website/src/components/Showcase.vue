@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
-import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import Slot from './Slot.vue'
 
 const input = ref('12')
@@ -9,6 +9,10 @@ const disabled = ref(false)
 
 let t1: ReturnType<typeof setTimeout>
 let t2: ReturnType<typeof setTimeout>
+
+watchEffect(() => {
+  console.log('input', input.value)
+})
 
 onMounted(() => {
   const isMobile = window.matchMedia('(max-width: 1023px)').matches

@@ -14,11 +14,12 @@ const props = withDefaults(defineProps<OTPInputProps>(), {
   pattern: REGEXP_ONLY_DIGITS,
   inputmode: 'numeric',
   allowNavigation: true,
+  modelValue: '',
 })
 
 const emit = defineEmits<{
   (event: 'complete', value: string): void;
-  (event: 'change', value: string): void;
+  (event: 'change', e: Event): void;
   (event: 'select', e: Event): void;
   (event: 'input', e: Event): void;
   (event: 'keydown', e: KeyboardEvent): void;
@@ -33,9 +34,10 @@ const emit = defineEmits<{
   (event: 'touchmove', e: TouchEvent): void;
   (event: 'click', e: MouseEvent): void;
   (event: 'dblclick', e: MouseEvent): void;
+  (event: 'update:modelValue', e: string): void;
 }>()
 
-const internalValue = defineModel({ default: '' })
+const internalValue = ref(props.modelValue)
 
 const regexp = computed(() => props.pattern
   ? typeof props.pattern === 'string'
@@ -157,17 +159,19 @@ function _selectListener() {
   })
 }
 
-function _changeListener(e: Event) {
-  if (
-    (e.currentTarget as any).value.length > 0
-    && regexp.value
-    && !regexp.value.test((e.currentTarget as any).value)
-  ) {
+function _inputListener(e: Event) {
+  syncTimeouts(_selectListener)
+
+  const newValue = (e.currentTarget as HTMLInputElement).value.slice(0, props.maxlength)
+
+  if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue)) {
     e.preventDefault()
     return
   }
 
-  emit('change', (e.currentTarget as any).value)
+  internalValue.value = newValue
+
+  emit('input', e)
 }
 
 // Fix iOS pasting
@@ -188,7 +192,7 @@ function _pasteListener(e: ClipboardEvent) {
   if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue))
     return
 
-  emit('change', newValue)
+  emit('input', e)
 
   const _start = Math.min(newValue.length, props.maxlength - 1)
   const _end = newValue.length
@@ -325,9 +329,9 @@ const slots = computed(() => {
 
 const attrs = useAttrs()
 const inputProps = computed(() => {
-  const { containerClass: _, value: _value, ...rest } = props
+  const { containerClass: _, value: _value, modelValue, allowNavigation, ...rest } = props
   return {
-    ...attrs,
+    // ...attrs,
     ...rest,
     autocomplete: props.autocomplete || 'one-time-code',
     pattern: regexp.value?.source,
@@ -360,7 +364,7 @@ const inputProps = computed(() => {
 
     <input
       ref="inputRef"
-      v-model="internalValue"
+      :value="internalValue"
       data-input-otp
       :style="{
         position: 'absolute',
@@ -378,7 +382,6 @@ const inputProps = computed(() => {
         fontSize: 'var(--root-height)',
       }"
       v-bind="inputProps"
-      @change="_changeListener"
       @select="(e) => {
         _selectListener()
         emit('select', e)
@@ -407,11 +410,12 @@ const inputProps = computed(() => {
         emit('click', e)
       }"
       @dblclick="onDoubleClick"
-      @input="(e) => {
+      @change="(e) => {
         syncTimeouts(_selectListener)
 
-        emit('input', e)
+        emit('change', e)
       }"
+      @input="_inputListener"
       @keydown="(e) => {
         _keyDownListener(e)
         syncTimeouts(_selectListener)
