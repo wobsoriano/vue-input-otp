@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
-import { nextTick, onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { vConfetti } from '@neoconfetti/vue';
 import Slot from './Slot.vue'
 
@@ -11,10 +11,6 @@ const disabled = ref(false)
 
 let t1: ReturnType<typeof setTimeout>
 let t2: ReturnType<typeof setTimeout>
-
-watchEffect(() => {
-  console.log('input', input.value)
-})
 
 onMounted(() => {
   const isMobile = window.matchMedia('(max-width: 1023px)').matches
@@ -28,7 +24,6 @@ onMounted(() => {
     t2 = setTimeout(
       () => {
         inputRef.value?.ref.focus()
-        console.log('focusing')
       },
       isMobile ? 0 : 2_500,
     )
@@ -53,7 +48,7 @@ function onSubmit(e?: Event | string) {
 
 <template>
   <div v-if="hasGuessed" v-confetti />
-  <form class="mx-auto flex max-w-[980px] justify-center pt-6 pb-4" @submit="onSubmit">
+  <form class="mx-auto flex max-w-[980px] justify-center pt-6 pb-4" v-bind="$attrs" @submit="onSubmit">
     <OTPInput
       ref="inputRef"
       v-slot="{ slots, isFocused }"
