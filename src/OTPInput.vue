@@ -41,6 +41,10 @@ const regexp = computed(() => props.pattern
 
 const inputRef = ref<HTMLInputElement | null>(null)
 
+defineExpose({
+  ref: inputRef
+})
+
 /** Mirrors for UI rendering purpose only */
 const isHoveringContainer = ref(false)
 const isFocused = ref(false)

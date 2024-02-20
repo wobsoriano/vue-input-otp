@@ -4,11 +4,10 @@ import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import Slot from './Slot.vue'
 
 const input = ref('12')
-const inputRef = ref<HTMLInputElement | null>(null)
+const inputRef = ref<{ ref: HTMLInputElement } | null>(null)
 const disabled = ref(false)
 
 onMounted(() => {
-  console.log(inputRef.value)
   const isMobile = window.matchMedia('(max-width: 1023px)').matches
   if (!isMobile) {
     disabled.value = true
@@ -18,7 +17,7 @@ onMounted(() => {
   }, 1_900)
   const t2 = setTimeout(
     () => {
-      inputRef.value?.focus()
+      inputRef.value?.ref.focus()
     },
     isMobile ? 0 : 2_500,
   )
