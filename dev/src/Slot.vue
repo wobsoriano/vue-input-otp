@@ -1,8 +1,15 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue';
+
+const props = defineProps<{
   char: string | null
   isActive: boolean
+  isFocused: boolean
+  animateIdx?: number
 }>()
+
+const willAnimateChar = computed(() => props.animateIdx !== undefined && props.animateIdx < 2)
+const willAnimateCaret = computed(() => props.animateIdx === 2)
 </script>
 
 <template>
@@ -12,12 +19,29 @@ defineProps<{
       'outline-4 outline-accent-foreground': isActive,
     }"
   >
-    <div v-if="char !== null">
-      {{ char }}
+    <div
+      class="duration-1000"
+      :class="{
+        'lg:opacity-0 lg:animate-fade-in': willAnimateChar,
+        '[animation-delay:1.5s]': animateIdx === 0,
+        '[animation-delay:2s]': animateIdx === 1,
+      }"
+    >
+      <div v-if="char">
+        {{ char }}
+      </div>
     </div>
-    <!-- Fake Caret -->
-    <div v-if="char === null && isActive" class="absolute pointer-events-none inset-0 flex items-center justify-center animate-caret-blink">
-      <div class="w-px h-8 md:w-0.5 md:h-16 bg-white" />
+
+    <div
+      v-if="isActive && char === null"
+      :class="{
+        'lg:opacity-0 lg:animate-fade-in': willAnimateCaret
+      }"
+    >
+      <!-- Fake Caret -->
+      <div class="absolute pointer-events-none inset-0 flex items-center justify-center animate-caret-blink [animate-delay:inherit]">
+        <div class="w-px h-8 md:w-0.5 md:h-16 bg-white" />
+      </div>
     </div>
   </div>
 </template>
