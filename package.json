@@ -39,9 +39,9 @@
   ],
   "scripts": {
     "build": "unbuild",
-    "dev": "vite serve dev",
-    "dev:build": "vite build dev",
-    "dev:preview": "vite preview dev",
+    "dev": "vite serve website",
+    "dev:build": "vite build website",
+    "dev:preview": "vite preview website",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "bumpp && npm publish",

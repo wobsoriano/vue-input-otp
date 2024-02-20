@@ -6,7 +6,7 @@ module.exports = {
   safelist: ['dark'],
 
   content: [
-    './dev/src/**/*.{ts,tsx,vue}',
+    './website/src/**/*.{ts,tsx,vue}',
   ],
 
   theme: {
