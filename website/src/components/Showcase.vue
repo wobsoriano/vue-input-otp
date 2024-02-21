@@ -3,6 +3,7 @@ import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { vConfetti } from '@neoconfetti/vue'
 import Slot from './Slot.vue'
+import { cn } from '@/lib/utils';
 
 const input = ref('12')
 const inputRef = ref<{ ref: HTMLInputElement } | null>(null)
@@ -35,18 +36,31 @@ onUnmounted(() => {
   clearTimeout(t2)
 })
 
-function onSubmit(e?: Event | string) {
+async function onSubmit(e?: Event | string) {
+  console.log(e)
+  inputRef.value?.ref.select()
+  await new Promise(r => setTimeout(r, 1_00))
+
   if (typeof e !== 'string')
     e?.preventDefault?.()
 
-  if (input.value === '123456')
+  if (input.value === '123456') {
     hasGuessed.value = true
+    setTimeout(() => {
+      hasGuessed.value = false
+    }, 1_000)
+  }
+
+  input.value = ''
+  setTimeout(() => {
+    inputRef.value?.ref?.blur()
+  }, 20)
 }
 </script>
 
 <template>
   <div v-if="hasGuessed" v-confetti="{ duration: 2500, particleShape: 'circles' }" />
-  <form class="mx-auto flex max-w-[980px] justify-center pt-6 pb-4" v-bind="$attrs" @submit="onSubmit">
+  <form :class="cn('mx-auto flex max-w-[980px] justify-center pt-6 pb-4', $attrs.class as string)" @submit="onSubmit">
     <OTPInput
       ref="inputRef"
       v-slot="{ slots, isFocused }"
