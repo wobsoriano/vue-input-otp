@@ -55,7 +55,7 @@ defineExpose({
   ref: inputRef,
 })
 
-function mutateInputRefAndReturn() {
+onMounted(() => {
   const el = inputRef.value
 
   if (!el)
@@ -74,13 +74,8 @@ function mutateInputRefAndReturn() {
     mirrorSelectionEnd.value = el.value.length
   }
 
-  return el
-}
-
-onMounted(() => {
-  const el = mutateInputRefAndReturn()!
-
   const styleEl = document.createElement('style')
+  styleEl.id = 'input-otp-style'
   document.head.appendChild(styleEl)
   const styleSheet = styleEl.sheet
   styleSheet?.insertRule(
@@ -95,16 +90,17 @@ onMounted(() => {
   const resizeObserver = new ResizeObserver(updateRootHeight)
   resizeObserver.observe(el)
 
-  _selectListener()
   setTimeout(() => {
-    isFocused.value = document.activeElement === inputRef.value
+    mirrorSelectionStart.value = el.selectionStart
+    mirrorSelectionEnd.value = el.selectionEnd
+    isFocused.value = document.activeElement === el
   }, 20)
 
   onUnmounted(() => {
     resizeObserver.disconnect()
-    document.head.removeChild(styleEl)
   })
 })
+
 watch([() => props.maxlength, internalValue], ([maxlength, value], [_, previousValue]) => {
   if (!previousValue)
     return
