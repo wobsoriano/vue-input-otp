@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Toaster } from '@/components/ui/sonner'
 import Page from './components/Page.vue'
 import SiteFooter from './components/SiteFooter.vue'
 import SiteHeader from './components/SiteHeader.vue'
+import { Toaster } from '@/components/ui/sonner'
 </script>
 
 <template>

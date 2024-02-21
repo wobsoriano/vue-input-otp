@@ -4,7 +4,7 @@ import { toast } from 'vue-sonner'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { vConfetti } from '@neoconfetti/vue'
 import Slot from './Slot.vue'
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils'
 
 const input = ref('12')
 const inputRef = ref<{ ref: HTMLInputElement } | null>(null)
@@ -49,7 +49,8 @@ async function onSubmit(e?: Event | string) {
     setTimeout(() => {
       hasGuessed.value = false
     }, 1_000)
-  } else {
+  }
+  else {
     toast('Try guessing the right password 🤔')
   }
 

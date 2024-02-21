@@ -13,7 +13,7 @@ defineOptions({
 const props = withDefaults(defineProps<OTPInputProps>(), {
   pattern: REGEXP_ONLY_DIGITS,
   inputmode: 'numeric',
-  allowNavigation: true
+  allowNavigation: true,
 })
 
 const emit = defineEmits<{
