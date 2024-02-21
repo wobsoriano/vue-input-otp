@@ -339,6 +339,7 @@ const inputProps = computed(() => {
 
 <template>
   <div
+    data-input-otp-container
     style="position: relative; user-select: none; -webkit-user-select: none;"
     :style="{ cursor: disabled ? 'default' : 'text' }"
     :class="containerClass"
