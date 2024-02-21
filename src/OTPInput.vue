@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useAttrs, watch } from 'vue'
-import type { Metadata, OTPInputProps } from './types'
+import type { Metadata } from './types'
 import { SelectionType } from './types'
 import { REGEXP_ONLY_DIGITS } from './regexp'
 import { syncTimeouts } from './sync-timeouts'
@@ -9,6 +9,52 @@ defineOptions({
   name: 'OTPInput',
   inheritAttrs: false,
 })
+
+// Vue doesn't support importing types yet
+interface InputHTMLAttributes {
+  accept?: string
+  alt?: string
+  autocomplete?: string
+  autofocus?: boolean
+  capture?: boolean | 'user' | 'environment'
+  checked?: boolean | any[] | Set<any>
+  crossorigin?: string
+  disabled?: boolean
+  enterKeyHint?: 'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send'
+  form?: string
+  formaction?: string
+  formenctype?: string
+  formmethod?: string
+  formnovalidate?: boolean
+  formtarget?: string
+  height?: number
+  indeterminate?: boolean
+  list?: string
+  max?: number
+  maxlength?: number
+  min?: number
+  minlength?: number
+  multiple?: boolean
+  name?: string
+  pattern?: string
+  placeholder?: string
+  readonly?: boolean
+  required?: boolean
+  size?: number
+  src?: string
+  step?: number
+  type?: string
+  value?: any
+  width?: number
+}
+
+interface OTPInputProps extends InputHTMLAttributes {
+  modelValue?: string
+  maxlength: number
+  allowNavigation?: boolean
+  inputmode?: 'numeric' | 'text'
+  containerClass?: string
+}
 
 const props = withDefaults(defineProps<OTPInputProps>(), {
   pattern: REGEXP_ONLY_DIGITS,
