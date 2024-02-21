@@ -1,6 +1,8 @@
 # OTP Input for Vue
 
-One time passcode Input. Accessible & unstyled. Based on the [React version](https://github.com/guilhermerodz/input-otp) by [guilhermerodz](https://github.com/guilhermerodz).
+https://github.com/wobsoriano/vue-input-otp/assets/13049130/c5080f41-f411-4d38-aa57-d04d90c832c3
+
+One-time passcode Input. Accessible & unstyled. Based on the [React version](https://github.com/guilhermerodz/input-otp) by [guilhermerodz](https://github.com/guilhermerodz).
 
 ## Installation
 
