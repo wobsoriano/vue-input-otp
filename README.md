@@ -51,10 +51,15 @@ defineProps<{
 
 <template>
   <div
-    class="relative w-10 h-14 text-[2rem] flex items-center justify-center transition-all duration-300 border-border border-y border-r first:border-l first:rounded-l-md last:rounded-r-md group-hover:border-accent-foreground/20 group-focus-within:border-accent-foreground/20 outline outline-0 outline-accent-foreground/20"
-    :class="{
-      'outline-4 outline-accent-foreground z-10': isActive,
-    }"
+    :class="cn(
+      'relative w-10 h-14 text-[2rem]',
+      'flex items-center justify-center',
+      'transition-all duration-300',
+      'border-border border-y border-r first:border-l first:rounded-l-md last:rounded-r-md',
+      'group-hover:border-accent-foreground/20 group-focus-within:border-accent-foreground/20',
+      'outline outline-0 outline-accent-foreground/20',
+      { 'outline-4 outline-accent-foreground': props.isActive },
+    )"
   >
     <div v-if="char !== null">
       {{ char }}
@@ -85,11 +90,25 @@ const config = {
     },
   },
 }
+
+// Small utility to merge class names.
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+import type { ClassValue } from "clsx";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 ```
 
 ## How it works
 
 There's currently no native OTP/2FA/MFA input in HTML, which means people are either going with 1. a simple input design or 2. custom designs like this one. This library works by rendering an invisible input as a sibling of the slots, contained by a `relative`ly positioned parent (the container root called OTPInput).
+
+## API Reference
+
+The root container. Define settings for the input via props. Then, pass in child elements to create the slots.
 
 ## License
 
