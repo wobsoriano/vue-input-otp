@@ -61,7 +61,7 @@ async function onSubmit(e?: Event | string) {
 </script>
 
 <template>
-  <div v-if="hasGuessed" v-confetti="{ duration: 2500, particleShape: 'circles' }" />
+  <div v-if="hasGuessed" v-confetti />
   <form :class="cn('mx-auto flex max-w-[980px] justify-center pt-6 pb-4', $attrs.class as string)" @submit="onSubmit">
     <OTPInput
       ref="inputRef"
