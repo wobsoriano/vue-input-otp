@@ -12,7 +12,7 @@ npm install vue-input-otp
 
 ## Usage
 
-The example below uses `tailwindcss`, `shadcn-vue`:
+The example below uses `tailwindcss`, `shadcn-vue`, `tailwind-merge` and `clsx`:
 
 ```vue
 <script setup lang="ts">
