@@ -4,7 +4,7 @@
   "typescript": true,
   "tailwind": {
     "config": "tailwind.config.js",
-    "css": "website/src/style.css",
+    "css": "src/style.css",
     "baseColor": "slate",
     "cssVariables": true
   },

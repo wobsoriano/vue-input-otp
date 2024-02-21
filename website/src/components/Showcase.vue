@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
-import { vConfetti } from '@neoconfetti/vue';
+import { vConfetti } from '@neoconfetti/vue'
 import Slot from './Slot.vue'
 
 const input = ref('12')
@@ -36,13 +36,11 @@ onUnmounted(() => {
 })
 
 function onSubmit(e?: Event | string) {
-  if (typeof e !== 'string') {
+  if (typeof e !== 'string')
     e?.preventDefault?.()
-  }
 
-  if (input.value === '123456') {
+  if (input.value === '123456')
     hasGuessed.value = true
-  }
 }
 </script>
 

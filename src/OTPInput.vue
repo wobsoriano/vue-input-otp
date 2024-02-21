@@ -45,6 +45,12 @@ const regexp = computed(() => props.pattern
     : props.pattern
   : null)
 
+/** Mirrors for UI rendering purpose only */
+const isHoveringInput = ref(false)
+const isFocused = ref(false)
+const mirrorSelectionStart = ref<number | null>(null)
+const mirrorSelectionEnd = ref<number | null>(null)
+
 const inputRef = ref<HTMLInputElement & { __metadata__?: Metadata } | null>(null)
 
 defineExpose({
@@ -101,13 +107,6 @@ onMounted(() => {
     document.head.removeChild(styleEl)
   })
 })
-
-/** Mirrors for UI rendering purpose only */
-const isHoveringInput = ref(false)
-const isFocused = ref(false)
-const mirrorSelectionStart = ref<number | null>(null)
-const mirrorSelectionEnd = ref<number | null>(null)
-
 watch([() => props.maxlength, internalValue], ([maxlength, value], [_, previousValue]) => {
   if (!previousValue)
     return
@@ -200,7 +199,7 @@ function _pasteListener(e: ClipboardEvent) {
 
   emit('input', e)
   emit('update:modelValue', newValue)
-  
+
   internalValue.value = newValue
 
   const _start = Math.min(newValue.length, props.maxlength - 1)
@@ -338,7 +337,6 @@ const slots = computed(() => {
 
 const attrs = useAttrs()
 const inputProps = computed(() => {
-  // Don't want to include this in the input element
   const { containerClass, value, modelValue, allowNavigation, ...rest } = props
   return {
     ...attrs, // putting attrs for now until I can extract the input props from Vue

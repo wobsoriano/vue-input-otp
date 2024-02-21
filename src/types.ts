@@ -1,4 +1,4 @@
-// TODO: Can't import Input Attributes from Vue
+// Need to figure out how to import this from Vue without causing "Failed to resolve extends base type" error
 export interface InputHTMLAttributes {
   accept?: string
   alt?: string

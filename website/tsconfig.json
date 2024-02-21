@@ -1,12 +1,13 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "moduleResolution": "bundler",
     "paths": {
-      "@/*": ["./src/*"],
-      "vue-input-otp": ["../src"]
+      "@/*": ["src/*"]
     },
-    "types": ["vite/client"]
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
-  "include": ["./**/*"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
 }
