@@ -200,6 +200,8 @@ function _pasteListener(e: ClipboardEvent) {
 
   emit('input', e)
   emit('update:modelValue', newValue)
+  
+  internalValue.value = newValue
 
   const _start = Math.min(newValue.length, props.maxlength - 1)
   const _end = newValue.length
