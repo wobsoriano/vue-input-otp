@@ -5,6 +5,7 @@ import Showcase from './Showcase.vue'
 import { buttonVariants } from './ui/button'
 import CopyButton from './CopyButton.vue'
 import { cn } from '@/lib/utils'
+import siteConfig from '@/siteConfig'
 
 const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
 </script>
@@ -48,7 +49,7 @@ const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
         <a
           target="_blank"
           rel="noreferrer"
-          href="https://github.com/wobsoriano/vue-input-otp"
+          :href="siteConfig.repoUrl"
           :class="cn(buttonVariants({ variant: 'outline' }))"
         >
           <GitHub class="mr-2 h-4 w-4" />

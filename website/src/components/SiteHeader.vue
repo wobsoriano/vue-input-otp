@@ -2,6 +2,7 @@
 import { buttonVariants } from './ui/button'
 import { GitHub, Twitter } from './Icons'
 import { cn } from '@/lib/utils'
+import siteConfig from '@/siteConfig';
 </script>
 
 <template>
@@ -15,7 +16,7 @@ import { cn } from '@/lib/utils'
           </div> -->
         <nav class="flex items-center">
           <a
-            href="https://github.com/wobsoriano/vue-input-otp"
+            :href="siteConfig.repoUrl"
             target="_blank"
             rel="noreferrer"
           >
@@ -32,7 +33,7 @@ import { cn } from '@/lib/utils'
             </div>
           </a>
           <a
-            href="https://x.com/wobsoriano"
+            :href="siteConfig.twitterUrl"
             target="_blank"
             rel="noreferrer"
           >
