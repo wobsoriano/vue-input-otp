@@ -373,8 +373,9 @@ const inputProps = computed(() => {
         inset: 0,
         width: '100%',
         height: '100%',
+        display: 'flex',
+        textAlign: 'center',
         opacity: '1', // Mandatory for iOS hold-paste
-
         color: 'transparent',
         pointerEvents: 'all',
         background: 'transparent',
