@@ -115,9 +115,8 @@ watch([() => props.maxlength, internalValue], ([maxlength, value], [_, previousV
 
 // Run improved selection tracking while focused
 watchEffect((onInvalidate) => {
-  if (!isFocused.value) {
+  if (!isFocused.value)
     return
-  }
 
   const interval = setInterval(() => {
     if (inputRef.value && document.activeElement === inputRef.value) {

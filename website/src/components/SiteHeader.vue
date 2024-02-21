@@ -2,7 +2,7 @@
 import { buttonVariants } from './ui/button'
 import { GitHub, Twitter } from './Icons'
 import { cn } from '@/lib/utils'
-import siteConfig from '@/siteConfig';
+import siteConfig from '@/siteConfig'
 </script>
 
 <template>
