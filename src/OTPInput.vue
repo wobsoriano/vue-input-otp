@@ -34,10 +34,9 @@ const emit = defineEmits<{
   (event: 'touchmove', e: TouchEvent): void
   (event: 'click', e: MouseEvent): void
   (event: 'dblclick', e: MouseEvent): void
-  (event: 'update:modelValue', e: string): void
 }>()
 
-const internalValue = ref(props.modelValue)
+const internalValue = defineModel({ default: '' })
 
 const regexp = computed(() => props.pattern
   ? typeof props.pattern === 'string'
@@ -174,9 +173,7 @@ function _inputListener(e: Event) {
   }
 
   internalValue.value = newValue
-
   emit('input', e)
-  emit('update:modelValue', newValue)
 }
 
 // Fix iOS pasting
@@ -197,10 +194,8 @@ function _pasteListener(e: ClipboardEvent) {
   if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue))
     return
 
-  emit('input', e)
-  emit('update:modelValue', newValue)
-
   internalValue.value = newValue
+  emit('input', e)
 
   const _start = Math.min(newValue.length, props.maxlength - 1)
   const _end = newValue.length

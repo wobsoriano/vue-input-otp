@@ -37,7 +37,6 @@ onUnmounted(() => {
 })
 
 async function onSubmit(e?: Event | string) {
-  console.log(e)
   inputRef.value?.ref.select()
   await new Promise(r => setTimeout(r, 1_00))
 
