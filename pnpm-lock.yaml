@@ -44,6 +44,9 @@ importers:
       vue-input-otp:
         specifier: workspace:*
         version: link:..
+      vue-sonner:
+        specifier: ^1.0.3
+        version: 1.0.3
     devDependencies:
       '@neoconfetti/vue':
         specifier: ^2.2.1
@@ -3821,6 +3824,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /vue-sonner@1.0.3:
+    resolution: {integrity: sha512-uJPvtcftMjmiXfpsMtB77+TkzWn8gEPI0l5sN+X+UqYuAOVacf0dk7ONqRsc5DWy1ilJtLexz/wSggwjimkYKA==}
+    dev: false
 
   /vue-template-compiler@2.7.16:
     resolution: {integrity: sha512-AYbUWAJHLGGQM7+cNTELw+KsOG9nl2CnSv467WobS5Cv9uk3wFcnr1Etsz2sEIHEZvw1U+o9mRlEO6QbZvUPGQ==}

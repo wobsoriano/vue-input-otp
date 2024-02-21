@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "vue": "^3.4.15",
-    "vue-input-otp": "workspace:*"
+    "vue-input-otp": "workspace:*",
+    "vue-sonner": "^1.0.3"
   },
   "devDependencies": {
     "@neoconfetti/vue": "^2.2.1",
