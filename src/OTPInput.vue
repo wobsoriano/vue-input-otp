@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, useAttrs, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
 import type { Metadata, OTPInputProps } from './types'
 import { SelectionType } from './types'
 import { REGEXP_ONLY_DIGITS } from './regexp'
@@ -107,13 +107,29 @@ watch([() => props.maxlength, internalValue], ([maxlength, value], [_, previousV
 
   if (
     value !== previousValue
-    && maxlength
     && previousValue.length < maxlength
-    && value
     && value.length === maxlength
   )
     emit('complete', value)
 }, { immediate: true })
+
+// Run improved selection tracking while focused
+watchEffect((onInvalidate) => {
+  if (!isFocused.value) {
+    return
+  }
+
+  const interval = setInterval(() => {
+    if (inputRef.value && document.activeElement === inputRef.value) {
+      mirrorSelectionStart.value = inputRef.value.selectionStart
+      mirrorSelectionEnd.value = inputRef.value.selectionEnd
+    }
+  }, 50)
+
+  onInvalidate(() => {
+    clearInterval(interval)
+  })
+})
 
 function _selectListener() {
   if (!inputRef.value)
