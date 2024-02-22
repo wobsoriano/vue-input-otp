@@ -37,7 +37,6 @@ export interface InputHTMLAttributes {
 }
 
 export interface OTPInputProps extends InputHTMLAttributes {
-  modelValue?: string
   maxlength: number
   allowNavigation?: boolean
   inputmode?: 'numeric' | 'text'

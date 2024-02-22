@@ -342,7 +342,7 @@ const slots = computed(() => {
 
 const attrs = useAttrs()
 const inputProps = computed(() => {
-  const { containerClass, value, modelValue, allowNavigation, ...rest } = props
+  const { containerClass, value, allowNavigation, ...rest } = props
   return {
     ...attrs, // putting attrs for now until I can extract the input props from Vue
     ...rest,
