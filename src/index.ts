@@ -3,3 +3,5 @@ export {
 } from './OTPInput.vue'
 
 export * from './regexp'
+
+export type { OTPInputProps, SlotProps, RenderProps } from './types'

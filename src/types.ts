@@ -53,3 +53,15 @@ export enum SelectionType {
 export interface Metadata {
   lastClickTimestamp: number
 }
+
+export interface SlotProps {
+  isActive: boolean
+  char: string | null
+  hasFakeCaret: boolean
+}
+
+export interface RenderProps {
+  slots: SlotProps[]
+  isFocused: boolean
+  isHovering: boolean
+}
