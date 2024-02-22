@@ -12,6 +12,23 @@ npm install vue-input-otp
 
 ## Usage
 
+```vue
+<script setup lang="ts">
+import { OTPInput } from 'vue-input-otp'
+import Slot from './Slot.vue'
+</script>
+
+<template>
+  <form>
+    <OTPInput v-slot="{ slots }" :maxlength="6">
+      <!-- slots -->
+    </OTPInput>
+  </form>
+</template>
+```
+
+## Default example
+
 The example below uses `tailwindcss`, `shadcn-vue`, `tailwind-merge` and `clsx`:
 
 ```vue
