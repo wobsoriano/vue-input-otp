@@ -61,12 +61,10 @@ import Slot from './Slot.vue'
 
 ```vue
 <script setup lang="ts">
-// Slot.vue
 import { cn } from '$lib/utils'
-defineProps<{
-  char: string | null
-  isActive: boolean
-}>()
+import type { SlotProps } from 'vue-input-otp'
+
+defineProps<SlotProps>()
 </script>
 
 <template>
