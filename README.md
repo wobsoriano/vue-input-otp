@@ -16,11 +16,13 @@ npm install vue-input-otp
 <script setup lang="ts">
 import { OTPInput } from 'vue-input-otp'
 import Slot from './Slot.vue'
+
+const input = ref('123456')
 </script>
 
 <template>
   <form>
-    <OTPInput v-slot="{ slots }" :maxlength="6">
+    <OTPInput v-slot="{ slots }" v-model="input" :maxlength="6">
       <!-- slots -->
     </OTPInput>
   </form>
