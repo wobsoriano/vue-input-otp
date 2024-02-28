@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<OTPInputProps>(), {
   pattern: REGEXP_ONLY_DIGITS,
   inputmode: 'numeric',
   allowNavigation: true,
+  autocomplete: 'one-time-code',
 })
 
 const emit = defineEmits<{
@@ -346,7 +347,6 @@ const inputProps = computed(() => {
   return {
     ...attrs, // putting attrs for now until I can extract the input props from Vue
     ...rest,
-    autocomplete: props.autocomplete || 'one-time-code',
     pattern: regexp.value?.source,
   }
 })
