@@ -128,6 +128,8 @@ There's currently no native OTP/2FA/MFA input in HTML, which means people are ei
 
 ## API Reference
 
+### OTPInput
+
 The root container. Define settings for the input via props. Then, pass in child elements to create the slots.
 
 ## License
