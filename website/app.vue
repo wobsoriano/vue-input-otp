@@ -1,11 +1,11 @@
 <script setup lang="ts">
 useHead({
   htmlAttrs: {
-    class: '[color-scheme:dark]'
+    class: '[color-scheme:dark]',
   },
   bodyAttrs: {
-    class: 'min-h-[100dvh] bg-background font-sans antialiased dark'
-  }
+    class: 'min-h-[100dvh] bg-background font-sans antialiased dark',
+  },
 })
 </script>
 

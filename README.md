@@ -63,8 +63,8 @@ import Slot from './Slot.vue'
 
 ```vue
 <script setup lang="ts">
-import { cn } from '$lib/utils'
 import type { SlotProps } from 'vue-input-otp'
+import { cn } from '$lib/utils'
 
 defineProps<SlotProps>()
 </script>
@@ -95,6 +95,12 @@ defineProps<SlotProps>()
 
 ```ts
 // tailwind.config.ts for the blinking caret animation.
+// Small utility to merge class names.
+import { clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+import type { ClassValue } from 'clsx'
+
 const config = {
   theme: {
     extend: {
@@ -111,14 +117,8 @@ const config = {
   },
 }
 
-// Small utility to merge class names.
-import { clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-import type { ClassValue } from "clsx";
-
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 ```
 
