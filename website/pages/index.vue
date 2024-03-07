@@ -2,10 +2,11 @@
 import { PageActions, PageHeader, PageHeaderDescription, PageHeaderHeading } from '~/components/PageHeader'
 import { GitHub } from '~/components/Icons'
 import { cn } from '~/lib/utils'
-import siteConfig from '~/siteConfig'
 import { buttonVariants } from '~/components/ui/button'
 
 const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -47,7 +48,7 @@ const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
         <a
           target="_blank"
           rel="noreferrer"
-          :href="siteConfig.repoUrl"
+          :href="config.public.repoUrl"
           :class="cn(buttonVariants({ variant: 'outline' }))"
         >
           <GitHub class="mr-2 h-4 w-4" />

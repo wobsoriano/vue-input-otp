@@ -2,7 +2,8 @@
 import { buttonVariants } from './ui/button'
 import { GitHub, Twitter } from './Icons'
 import { cn } from '@/lib/utils'
-import siteConfig from '@/siteConfig'
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -16,7 +17,7 @@ import siteConfig from '@/siteConfig'
           </div> -->
         <nav class="flex items-center">
           <a
-            :href="siteConfig.repoUrl"
+            :href="config.public.repoUrl"
             target="_blank"
             rel="noreferrer"
           >
@@ -33,7 +34,7 @@ import siteConfig from '@/siteConfig'
             </div>
           </a>
           <a
-            :href="siteConfig.twitterUrl"
+            :href="config.public.twitterUrl"
             target="_blank"
             rel="noreferrer"
           >
