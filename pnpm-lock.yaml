@@ -72,8 +72,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(vue@3.4.19)
       vue-sonner:
-        specifier: ^1.0.3
-        version: 1.0.3
+        specifier: ^1.1.2
+        version: 1.1.2
     devDependencies:
       '@nuxtjs/tailwindcss':
         specifier: ^6.11.4
@@ -8323,8 +8323,8 @@ packages:
       vue: 3.4.19(typescript@5.3.3)
     dev: false
 
-  /vue-sonner@1.0.3:
-    resolution: {integrity: sha512-uJPvtcftMjmiXfpsMtB77+TkzWn8gEPI0l5sN+X+UqYuAOVacf0dk7ONqRsc5DWy1ilJtLexz/wSggwjimkYKA==}
+  /vue-sonner@1.1.2:
+    resolution: {integrity: sha512-yg4f5s0a3oiiI7cNvO0Dajux1Y7s04lxww3vnQtnwQawJ3KqaKA9RIRMdI9wGTosRGIOwgYFniFRGl4+IuKPZw==}
     dev: false
 
   /vue-template-compiler@2.7.16:

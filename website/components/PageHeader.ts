@@ -14,13 +14,13 @@ export const PageHeaderHeading = defineComponent((_, { attrs, slots }) => {
 })
 
 export const PageHeaderDescription = defineComponent((_, { attrs, slots }) => {
-  return () => h('div', {
+  return () => h('p', {
     class: cn('max-w-[750px] text-center text-lg text-muted-foreground sm:text-xl text-pretty', attrs.class as string),
   }, slots.default?.())
 })
 
 export const PageActions = defineComponent((_, { attrs, slots }) => {
-  return () => h('p', {
+  return () => h('div', {
     class: cn('flex w-full items-center justify-center space-x-4 py-4 md:pb-10', attrs.class as string),
   }, slots.default?.())
 })
