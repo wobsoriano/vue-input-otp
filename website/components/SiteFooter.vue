@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import siteConfig from '@/siteConfig'
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -8,7 +8,7 @@ import siteConfig from '@/siteConfig'
       <p class="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
         Built by
         <a
-          :href="siteConfig.twitterUrl"
+          :href="config.public.twitterUrl"
           target="_blank"
           rel="noreferrer"
           class="font-medium underline underline-offset-4"
@@ -20,7 +20,7 @@ import siteConfig from '@/siteConfig'
           class="font-medium underline underline-offset-4" href="https://twitter.com/guilherme_rodz"
         >guilhermerodz</a>. The source code is available on
         <a
-          :href="siteConfig.repoUrl"
+          :href="config.public.repoUrl"
           target="_blank"
           rel="noreferrer"
           class="font-medium underline underline-offset-4"
