@@ -10,12 +10,12 @@ useHead({
 </script>
 
 <template>
-  <Toaster />
   <div class="relative flex min-h-[100dvh] flex-col bg-background">
     <SiteHeader />
     <main class="flex-1 flex flex-col">
-      <Page />
+      <NuxtPage />
     </main>
     <SiteFooter />
   </div>
+  <Toaster />
 </template>

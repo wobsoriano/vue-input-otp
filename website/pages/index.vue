@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { PageActions, PageHeader, PageHeaderDescription, PageHeaderHeading } from './PageHeader'
-import { GitHub } from './Icons'
-import Showcase from './Showcase.vue'
-import { buttonVariants } from './ui/button'
-import CopyButton from './CopyButton.vue'
-import { cn } from '@/lib/utils'
-import siteConfig from '@/siteConfig'
+import { PageActions, PageHeader, PageHeaderDescription, PageHeaderHeading } from '~/components/PageHeader'
+import { GitHub } from '~/components/Icons'
+import { cn } from '~/lib/utils'
+import siteConfig from '~/siteConfig'
+import { buttonVariants } from '~/components/ui/button'
 
 const fadeUpClass = 'lg:motion-safe:opacity-0 lg:motion-safe:animate-fade-up'
 </script>
