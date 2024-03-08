@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<OTPInputProps>(), {
   pattern: REGEXP_ONLY_DIGITS,
   inputmode: 'numeric',
   autocomplete: 'one-time-code',
+  textAlign: 'left',
 })
 
 const emit = defineEmits<OTPInputEmits>()
@@ -358,7 +359,7 @@ const inputProps = computed(() => {
         width: '100%',
         height: '100%',
         display: 'flex',
-        textAlign: 'center',
+        textAlign,
         opacity: '1', // Mandatory for iOS hold-paste
         color: 'transparent',
         pointerEvents: 'all',

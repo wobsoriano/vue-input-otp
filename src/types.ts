@@ -38,6 +38,7 @@ export interface InputHTMLAttributes {
 
 export interface OTPInputProps extends InputHTMLAttributes {
   maxlength: number
+  textAlign?: 'left' | 'center' | 'right'
   inputmode?: 'numeric' | 'text'
   containerClass?: string
 }
