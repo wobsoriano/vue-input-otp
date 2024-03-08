@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
-import type { Metadata, OTPInputProps } from './types'
+import type { Metadata, OTPInputProps, OTPInputEmits } from './types'
 import { SelectionType } from './types'
 import { REGEXP_ONLY_DIGITS } from './regexp'
 import { syncTimeouts } from './sync-timeouts'
@@ -17,24 +17,7 @@ const props = withDefaults(defineProps<OTPInputProps>(), {
   autocomplete: 'one-time-code',
 })
 
-const emit = defineEmits<{
-  (event: 'complete', value: string): void
-  (event: 'change', e: Event): void
-  (event: 'select', e: Event): void
-  (event: 'input', e: Event): void
-  (event: 'keydown', e: KeyboardEvent): void
-  (event: 'keyup', e: KeyboardEvent): void
-  (event: 'focus', e: FocusEvent): void
-  (event: 'blur', e: FocusEvent): void
-  (event: 'mouseover', e: MouseEvent): void
-  (event: 'mouseleave', e: MouseEvent): void
-  (event: 'mousedown', e: MouseEvent): void
-  (event: 'paste', e: ClipboardEvent): void
-  (event: 'touchend', e: TouchEvent): void
-  (event: 'touchmove', e: TouchEvent): void
-  (event: 'click', e: MouseEvent): void
-  (event: 'dblclick', e: MouseEvent): void
-}>()
+const emit = defineEmits<OTPInputEmits>()
 
 const internalValue = defineModel({ default: '' })
 

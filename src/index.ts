@@ -4,4 +4,4 @@ export {
 
 export * from './regexp'
 
-export type { OTPInputProps, SlotProps, RenderProps } from './types'
+export type { OTPInputProps, OTPInputEmits, SlotProps, RenderProps } from './types'
