@@ -132,6 +132,27 @@ There's currently no native OTP/2FA/MFA input in HTML, which means people are ei
 
 The root container. Define settings for the input via props. Then, pass in child elements to create the slots.
 
+##### Props
+
+|Name|Description|Type|Values|Default|
+|:----|:----|:----|:----|:----|
+|`maxlength`|The number of slots.|`number`|`-`|`-`|
+|`containerClass`|The class for the root container.|`string`|`-`|`-`|
+|`textAlign`|Where is the text located within the input. Affects click-holding or long-press behavior.|`string`|`left`, `right`, `center`|`center`|
+|`inputmode`|Virtual keyboard appearance on mobile.|`string`|`numeric`, `text`|`numeric`|
+
+#### Slots
+
+|Name|Description|Props|
+|:----|:----|:----|
+|`default`|The slots to be rendered.|`slots: SlotProps[], isFocused: boolean, isHovering: boolean`|
+
+#### Events
+
+|Name|Description|Parameters|
+|:----|:----|:----|
+|`complete`|Emitted when the input is complete.|`value: string`|
+
 ## License
 
 MIT

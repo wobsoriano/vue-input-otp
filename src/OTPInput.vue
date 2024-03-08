@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
-import type { Metadata, OTPInputEmits, OTPInputProps } from './types'
+import type { Metadata, OTPInputEmits, OTPInputProps, SlotProps } from './types'
 import { SelectionType } from './types'
 import { REGEXP_ONLY_DIGITS } from './regexp'
 import { syncTimeouts } from './sync-timeouts'
@@ -294,7 +294,7 @@ function onDoubleClick(e: MouseEvent) {
   emit('dblclick', e)
 }
 
-const slots = computed(() => {
+const slots = computed<SlotProps[]>(() => {
   return Array.from({ length: Number(props.maxlength) }).map((_, slotIdx) => {
     const isActive
       = isFocused.value
