@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
-import type { Metadata, OTPInputProps, OTPInputEmits } from './types'
+import type { Metadata, OTPInputEmits, OTPInputProps } from './types'
 import { SelectionType } from './types'
 import { REGEXP_ONLY_DIGITS } from './regexp'
 import { syncTimeouts } from './sync-timeouts'
@@ -13,7 +13,6 @@ defineOptions({
 const props = withDefaults(defineProps<OTPInputProps>(), {
   pattern: REGEXP_ONLY_DIGITS,
   inputmode: 'numeric',
-  allowNavigation: true,
   autocomplete: 'one-time-code',
 })
 
@@ -47,11 +46,6 @@ onMounted(() => {
 
   const _select = el.select.bind(el)
   el.select = () => {
-    if (!props.allowNavigation) {
-      // Cannot select all chars as navigation is disabled
-      return
-    }
-
     _select()
     // Workaround proxy to update UI as native `.select()` does not trigger focus event
     mirrorSelectionStart.value = 0
@@ -227,42 +221,37 @@ function _keyDownListener(e: KeyboardEvent) {
     || e.key === 'Home'
     || e.key === 'End'
   ) {
-    if (!props.allowNavigation) {
+    if (
+      e.key === 'ArrowLeft'
+      && selectionType === SelectionType.CHAR
+      && !e.shiftKey
+      && !e.metaKey
+      && !e.ctrlKey
+      && !e.altKey
+    ) {
       e.preventDefault()
+
+      const start = Math.max(inputSel[0] - 1, 0)
+      const end = Math.max(inputSel[1] - 1, 1)
+
+      inputRef.value.setSelectionRange(start, end)
     }
-    else {
-      if (
-        e.key === 'ArrowLeft'
-        && selectionType === SelectionType.CHAR
-        && !e.shiftKey
-        && !e.metaKey
-        && !e.ctrlKey
-        && !e.altKey
-      ) {
-        e.preventDefault()
 
-        const start = Math.max(inputSel[0] - 1, 0)
-        const end = Math.max(inputSel[1] - 1, 1)
+    if (
+      e.altKey
+      && !e.shiftKey
+      && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')
+    ) {
+      e.preventDefault()
 
-        inputRef.value.setSelectionRange(start, end)
-      }
+      if (e.key === 'ArrowLeft')
+        inputRef.value.setSelectionRange(0, Math.min(1, internalValue.value.length))
 
-      if (
-        e.altKey
-        && !e.shiftKey
-        && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')
-      ) {
-        e.preventDefault()
-
-        if (e.key === 'ArrowLeft')
-          inputRef.value.setSelectionRange(0, Math.min(1, internalValue.value.length))
-
-        if (e.key === 'ArrowRight') {
-          inputRef.value.setSelectionRange(
-            Math.max(0, internalValue.value.length - 1),
-            internalValue.value.length,
-          )
-        }
+      if (e.key === 'ArrowRight') {
+        inputRef.value.setSelectionRange(
+          Math.max(0, internalValue.value.length - 1),
+          internalValue.value.length,
+        )
       }
     }
   }
@@ -326,7 +315,7 @@ const slots = computed(() => {
 
 const attrs = useAttrs()
 const inputProps = computed(() => {
-  const { containerClass, value, allowNavigation, ...rest } = props
+  const { containerClass, value, ...rest } = props
   return {
     ...attrs, // putting attrs for now until I can extract the input props from Vue
     ...rest,

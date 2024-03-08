@@ -70,7 +70,6 @@ async function onSubmit(e?: Event | string) {
       v-model="input"
       :disabled="disabled"
       :maxlength="6"
-      allow-navigation
       :pattern="REGEXP_ONLY_DIGITS"
       container-class="group flex items-center"
       @complete="onSubmit"
