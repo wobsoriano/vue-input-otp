@@ -43,8 +43,8 @@ watch(hasCopied, () => {
     <DropdownMenuContent align="end">
       <DropdownMenuItem
         v-for="item in menuItems"
-        @click="copyToClipboardWithMeta(item)"
         :key="item"
+        @click="copyToClipboardWithMeta(item)"
       >
         {{ item }}
       </DropdownMenuItem>
