@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
+import { CSSProperties, computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
 import type { Metadata, OTPInputEmits, OTPInputProps, SlotProps } from './types'
 import { SelectionType } from './types'
 import { REGEXP_ONLY_DIGITS } from './regexp'
@@ -323,6 +323,25 @@ const inputProps = computed(() => {
     pattern: regexp.value?.source,
   }
 })
+
+const inputStyle = {
+  position: 'absolute',
+  inset: 0,
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  textAlign: props.textAlign,
+  opacity: '1', // Mandatory for iOS hold-paste
+  color: 'transparent',
+  pointerEvents: 'all',
+  background: 'transparent',
+  caretColor: 'transparent',
+  border: '0 solid transparent',
+  outline: '0 solid transparent',
+  lineHeight: '1',
+  letterSpacing: '-.5em',
+  fontSize: 'var(--root-height)',
+} satisfies CSSProperties
 </script>
 
 <template>
@@ -353,24 +372,7 @@ const inputProps = computed(() => {
       ref="inputRef"
       :value="internalValue"
       data-input-otp
-      :style="{
-        position: 'absolute',
-        inset: 0,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        textAlign,
-        opacity: '1', // Mandatory for iOS hold-paste
-        color: 'transparent',
-        pointerEvents: 'all',
-        background: 'transparent',
-        caretColor: 'transparent',
-        border: '0 solid transparent',
-        outline: '0 solid transparent',
-        lineHeight: '1',
-        letterSpacing: '-.5em',
-        fontSize: 'var(--root-height)',
-      }"
+      :style="inputStyle"
       v-bind="inputProps"
       @select="(e) => {
         _selectListener()
