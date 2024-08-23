@@ -16,7 +16,9 @@ const menuItems = ['npm', 'yarn', 'pnpm', 'bun']
 function copyToClipboardWithMeta(value: string) {
   const cmd = value === 'npm' ? 'npm install vue-input-otp' : `${value} add vue-input-otp`
 
-  window && window.isSecureContext && navigator.clipboard.writeText(cmd)
+  if (window && window.isSecureContext) {
+    navigator.clipboard.writeText(cmd)
+  }
   hasCopied.value = true
 }
 

@@ -164,14 +164,14 @@ function _pasteListener(e: ClipboardEvent) {
   const content = e.clipboardData?.getData('text/plain')
   e.preventDefault()
 
-  const start = inputRef.value?.selectionStart!
-  const end = inputRef.value?.selectionEnd!
+  const start = inputRef.value?.selectionStart
+  const end = inputRef.value?.selectionEnd
 
   const isReplacing = start !== end
 
   const newValueUncapped = isReplacing
-    ? internalValue.value.slice(0, start) + content + internalValue.value.slice(end) // Replacing
-    : internalValue.value.slice(0, start) + content + internalValue.value.slice(start) // Inserting
+    ? internalValue.value.slice(0, start!) + content + internalValue.value.slice(end!) // Replacing
+    : internalValue.value.slice(0, start!) + content + internalValue.value.slice(start!) // Inserting
   const newValue = newValueUncapped.slice(0, props.maxlength)
 
   if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue))
