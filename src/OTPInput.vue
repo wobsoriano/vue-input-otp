@@ -81,15 +81,9 @@ onMounted(() => {
 })
 
 watch([() => props.maxlength, internalValue], ([maxlength, value], [_, previousValue]) => {
-  if (!previousValue)
-    return
-
-  if (
-    value !== previousValue
-    && previousValue.length < maxlength
-    && value.length === maxlength
-  )
+  if (value !== previousValue && value.length === maxlength) { 
     emit('complete', value)
+  }
 }, { immediate: true })
 
 // Run improved selection tracking while focused
