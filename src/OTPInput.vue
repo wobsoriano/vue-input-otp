@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { CSSProperties, computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
+import type { CSSProperties } from 'vue'
+import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
 import type { Metadata, OTPInputEmits, OTPInputProps, SlotProps } from './types'
 import { SelectionType } from './types'
 import { REGEXP_ONLY_DIGITS } from './regexp'
@@ -81,9 +82,8 @@ onMounted(() => {
 })
 
 watch([() => props.maxlength, internalValue], ([maxlength, value], [_, previousValue]) => {
-  if (value !== previousValue && value.length === maxlength) { 
+  if (value !== previousValue && value.length === maxlength)
     emit('complete', value)
-  }
 }, { immediate: true })
 
 // Run improved selection tracking while focused
