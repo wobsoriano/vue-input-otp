@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt'],
+
   shadcn: {
     /**
      * Prefix for all the imported component
@@ -11,6 +12,7 @@ export default defineNuxtConfig({
      */
     componentDir: './components/ui',
   },
+
   runtimeConfig: {
     public: {
       gitHubUrl: 'https://github.com/wobsoriano',
@@ -18,4 +20,6 @@ export default defineNuxtConfig({
       twitterUrl: 'https://twitter.com/wobsoriano',
     },
   },
+
+  compatibilityDate: '2024-08-25',
 })
