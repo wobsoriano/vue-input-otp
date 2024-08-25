@@ -38,9 +38,6 @@ importers:
 
   website:
     dependencies:
-      '@neoconfetti/vue':
-        specifier: ^2.2.1
-        version: 2.2.1
       '@radix-icons/vue':
         specifier: ^1.0.0
         version: 1.0.0(vue@3.4.38(typescript@5.5.4))
@@ -1154,9 +1151,6 @@ packages:
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
     hasBin: true
-
-  '@neoconfetti/vue@2.2.1':
-    resolution: {integrity: sha512-GXe5XoHlMK8VIxmxKuAgF9QQwRoDLmtiwVhONA9rzF+zOLGfOVLxo4OEDZqU9F0gJkB7U23BLlGJ3ouOb+kguw==}
 
   '@netlify/functions@2.8.1':
     resolution: {integrity: sha512-+6wtYdoz0yE06dSa9XkP47tw5zm6g13QMeCwM3MmHx1vn8hzwFa51JtmfraprdkL7amvb7gaNM+OOhQU1h6T8A==}
@@ -6181,8 +6175,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
-
-  '@neoconfetti/vue@2.2.1': {}
 
   '@netlify/functions@2.8.1':
     dependencies:
