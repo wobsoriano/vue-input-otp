@@ -44,6 +44,9 @@ importers:
       '@radix-icons/vue':
         specifier: ^1.0.0
         version: 1.0.0(vue@3.4.38(typescript@5.5.4))
+      balloons-js:
+        specifier: ^0.0.1
+        version: 0.0.1
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -2019,6 +2022,10 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  balloons-js@0.0.1:
+    resolution: {integrity: sha512-/AZl8ZVrdn46OeeRwARjocGo2tcigcrtFqiG6QxrLFaFAGs68gPMDv54NTKSbhsUqrOBKEplKBLrwYEIng3a5w==}
+    engines: {node: '>=12.0.0'}
 
   bare-events@2.2.1:
     resolution: {integrity: sha512-9GYPpsPFvrWBkelIhOhTWtkeZxVxZOdb3VnFTCzlOo3OjvmTvzLoZFUT8kNFACx0vJej6QPney1Cf9BvzCNE/A==}
@@ -7289,6 +7296,8 @@ snapshots:
   b4a@1.6.6: {}
 
   balanced-match@1.0.2: {}
+
+  balloons-js@0.0.1: {}
 
   bare-events@2.2.1:
     optional: true

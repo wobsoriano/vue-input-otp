@@ -2,13 +2,12 @@
 import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
 import { toast } from 'vue-sonner'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
-import { vConfetti } from '@neoconfetti/vue'
+import { balloons } from 'balloons-js'
 import Slot from './Slot.vue'
 import { cn } from '@/lib/utils'
 
 const input = ref('12')
 const inputRef = ref<{ ref: HTMLInputElement } | null>(null)
-const hasGuessed = ref(false)
 const disabled = ref(false)
 
 let t1: ReturnType<typeof setTimeout>
@@ -45,10 +44,7 @@ async function onSubmit(e?: Event | string) {
     e?.preventDefault?.()
 
   if (input.value === '123456') {
-    hasGuessed.value = true
-    setTimeout(() => {
-      hasGuessed.value = false
-    }, 1_000)
+    balloons()
   }
   else {
     toast('Try guessing the right password 🤔')
@@ -62,7 +58,6 @@ async function onSubmit(e?: Event | string) {
 </script>
 
 <template>
-  <div v-if="hasGuessed" v-confetti />
   <form :class="cn('mx-auto flex max-w-[980px] justify-center pt-6 pb-4', $attrs.class as string)" @submit="onSubmit">
     <OTPInput
       ref="inputRef"
