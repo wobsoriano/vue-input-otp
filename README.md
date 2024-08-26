@@ -194,7 +194,7 @@ import { OTPInput } from 'vue-input-otp'
 </script>
 
 <template>
-    <form ref="formRef">
+    <form>
         <!-- Pro tip: accepts all common HTML input props... -->
         <OTPInput autoFocus />
     </form>
