@@ -41,6 +41,8 @@ export interface OTPInputProps extends InputHTMLAttributes {
   textAlign?: 'left' | 'center' | 'right'
   inputmode?: 'numeric' | 'text'
   containerClass?: string
+  pushPasswordManagerStrategy?: 'increase-width' | 'none'
+  noScriptCssFallback?: string | null
 }
 
 export interface OTPInputEmits {
@@ -48,18 +50,11 @@ export interface OTPInputEmits {
   (event: 'change', e: Event): void
   (event: 'select', e: Event): void
   (event: 'input', e: Event): void
-  (event: 'keydown', e: KeyboardEvent): void
-  (event: 'keyup', e: KeyboardEvent): void
   (event: 'focus', e: FocusEvent): void
   (event: 'blur', e: FocusEvent): void
   (event: 'mouseover', e: MouseEvent): void
   (event: 'mouseleave', e: MouseEvent): void
-  (event: 'mousedown', e: MouseEvent): void
   (event: 'paste', e: ClipboardEvent): void
-  (event: 'touchend', e: TouchEvent): void
-  (event: 'touchmove', e: TouchEvent): void
-  (event: 'click', e: MouseEvent): void
-  (event: 'dblclick', e: MouseEvent): void
 }
 
 export enum SelectionType {

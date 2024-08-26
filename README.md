@@ -140,6 +140,7 @@ The root container. Define settings for the input via props. Then, pass in child
 |`containerClass`|The class for the root container.|`string`|`-`|`-`|
 |`textAlign`|Where is the text located within the input. Affects click-holding or long-press behavior.|`string`|`left`, `right`, `center`|`center`|
 |`inputmode`|Virtual keyboard appearance on mobile.|`string`|`numeric`, `text`|`numeric`|
+|`pushPasswordManagerStrategy`|Detect Password Managers and shift their badges to the right side, outside the input.|`string`|`increase-width`, `none`|`increase-width`|
 
 #### Slots
 
@@ -152,6 +153,61 @@ The root container. Define settings for the input via props. Then, pass in child
 |Name|Description|Parameters|
 |:----|:----|:----|
 |`complete`|Emitted when the input is complete.|`value: string`|
+
+## Examples
+
+<details>
+<summary>Automatic form submission on OTP completion</summary>
+
+```vue
+<script setup>
+import { OTPInput } from 'vue-input-otp'
+import { ref } from 'vue'
+
+const formRef = ref()
+const buttonRef = ref()
+
+function onComplete() {
+  // ... automatically submit the form
+  formRef.value.submit()
+  // ... or focus the button like as you wish
+  buttonRef.value.focus()
+}
+</script>
+
+<template>
+  <form ref="formRef">
+    <OTPInput @complete="onComplete" />
+    <button ref="buttonRef">
+      Submit
+    </button>
+  </form>
+</template>
+```
+
+</details>
+
+<details>
+<summary>Automatically focus the input when the page loads</summary>
+
+```vue
+<script setup>
+import { OTPInput } from 'vue-input-otp'
+</script>
+
+<template>
+  <form>
+    <!-- Pro tip: accepts all common HTML input props... -->
+    <OTPInput auto-focus />
+  </form>
+</template>
+```
+
+</details>
+
+## Caveats
+
+See list of caveats in the original implementation [here](https://github.com/guilhermerodz/input-otp/blob/master/README.md#caveats).
 
 ## License
 

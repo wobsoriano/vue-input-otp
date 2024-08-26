@@ -67,6 +67,7 @@ async function onSubmit(e?: Event | string) {
       :maxlength="6"
       :pattern="REGEXP_ONLY_DIGITS"
       container-class="group flex items-center"
+      aria-label="showcase-otp-input"
       @complete="onSubmit"
     >
       <div class="flex">
