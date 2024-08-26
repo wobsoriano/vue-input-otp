@@ -6,7 +6,7 @@ import { REGEXP_ONLY_DIGITS } from './regexp'
 import { syncTimeouts } from './sync-timeouts'
 import { usePasswordManagerBadge } from './use-pwm-badge'
 import { usePrevious } from './use-previous'
-import { NOSCRIPT_CSS_FALLBACK } from './NoSciptCssFallback'
+import { NOSCRIPT_CSS_FALLBACK, NoSciptCssFallback } from './NoSciptCssFallback'
 
 defineOptions({
   name: 'OTPInput',
@@ -420,7 +420,7 @@ const contextValue = computed<SlotProps[]>(() => {
 </script>
 
 <template>
-  <!-- <NoSciptCssFallback v-if="noScriptCssFallback !== null" :fallback="noScriptCssFallback" /> -->
+  <NoSciptCssFallback v-if="noScriptCssFallback !== null" :fallback="noScriptCssFallback" />
 
   <div
     ref="containerRef"

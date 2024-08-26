@@ -29,6 +29,6 @@ export const NoSciptCssFallback = defineComponent({
     },
   },
   setup(props) {
-    return () => h('noscript', {}, h('style', props.fallback))
+    return () => h('noscript', { innerHTML: `<style>${props.fallback}</style>` })
   },
 })
