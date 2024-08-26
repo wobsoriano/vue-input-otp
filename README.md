@@ -154,6 +154,51 @@ The root container. Define settings for the input via props. Then, pass in child
 |:----|:----|:----|
 |`complete`|Emitted when the input is complete.|`value: string`|
 
+## Examples
+
+<details>
+<summary>Automatic form submission on OTP completion</summary>
+```vue
+<script setup>
+import { OTPInput } from 'vue-input-otp'
+import { ref } from 'vue'
+
+const formRef = ref()
+const buttonRef = ref()
+
+function onComplete() {
+  // ... automatically submit the form
+  formRef.value.submit()
+  // ... or focus the button like as you wish
+  buttonRef.value.focus()
+}
+</script>
+
+<template>
+    <form ref="formRef">
+        <OTPInput @complete="onComplete" />
+        <button ref="buttonRef">Submit</button>
+    </form>
+</template>
+```
+</details>
+
+<details>
+<summary>Automatically focus the input when the page loads</summary>
+```vue
+<script setup>
+import { OTPInput } from 'vue-input-otp'
+</script>
+
+<template>
+    <form ref="formRef">
+        <!-- Pro tip: accepts all common HTML input props... -->
+        <OTPInput autoFocus />
+    </form>
+</template>
+```
+</details>
+
 ## License
 
 MIT
