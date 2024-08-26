@@ -1,5 +1,11 @@
 # vue-input-otp
 
+## 0.2.1
+
+### Patch Changes
+
+- 7d6ee46: Fix password manager positioning
+
 ## 0.2.0
 
 ### Minor Changes
