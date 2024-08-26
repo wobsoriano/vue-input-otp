@@ -283,8 +283,7 @@ function _inputListener(e: Event) {
   }
 
   internalValue.value = newValue
-
-  emit('input', e)
+  emit('input', newValue)
 }
 
 function _focusListener() {
@@ -323,7 +322,7 @@ function _pasteListener(e: ClipboardEvent) {
   }
 
   internalValue.value = newValue
-  emit('input', e)
+  emit('input', newValue)
 
   const _start = Math.min(newValue.length, props.maxlength - 1)
   const _end = newValue.length

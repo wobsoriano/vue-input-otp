@@ -49,7 +49,7 @@ export interface OTPInputEmits {
   (event: 'complete', value: string): void
   (event: 'change', e: Event): void
   (event: 'select', e: Event): void
-  (event: 'input', e: Event): void
+  (event: 'input', value: string): void
   (event: 'focus', e: FocusEvent): void
   (event: 'blur', e: FocusEvent): void
   (event: 'mouseover', e: MouseEvent): void
