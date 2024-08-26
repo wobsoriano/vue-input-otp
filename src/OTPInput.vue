@@ -357,10 +357,10 @@ const inputStyle = computed<StyleValue>(
   () => ({
     position: 'absolute',
     inset: 0,
-    width: pwmb.willPushPWMBadge
+    width: pwmb.willPushPWMBadge.value
       ? `calc(100% + ${pwmb.PWM_BADGE_SPACE_WIDTH})`
       : '100%',
-    clipPath: pwmb.willPushPWMBadge
+    clipPath: pwmb.willPushPWMBadge.value
       ? `inset(0 ${pwmb.PWM_BADGE_SPACE_WIDTH} 0 0)`
       : undefined,
     height: '100%',
