@@ -140,6 +140,7 @@ The root container. Define settings for the input via props. Then, pass in child
 |`containerClass`|The class for the root container.|`string`|`-`|`-`|
 |`textAlign`|Where is the text located within the input. Affects click-holding or long-press behavior.|`string`|`left`, `right`, `center`|`center`|
 |`inputmode`|Virtual keyboard appearance on mobile.|`string`|`numeric`, `text`|`numeric`|
+|`pushPasswordManagerStrategy`|Detect Password Managers and shift their badges to the right side, outside the input.|`increase-width`, `none`|`increase-width`|
 
 #### Slots
 
