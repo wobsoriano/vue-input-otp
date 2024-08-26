@@ -199,6 +199,10 @@ import { OTPInput } from 'vue-input-otp'
 ```
 </details>
 
+## Caveats
+
+See list of caveats in the original implementation [here](https://github.com/guilhermerodz/input-otp/blob/master/README.md#caveats).
+
 ## License
 
 MIT
