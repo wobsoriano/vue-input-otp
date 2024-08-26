@@ -300,8 +300,6 @@ function _focusListener() {
 
 // Fix iOS pasting
 function _pasteListener(e: ClipboardEvent) {
-  // eslint-disable-next-line no-console
-  console.log('paste listened', e.clipboardData?.getData('text/plain'))
   const input = inputRef.value
   if (!e.clipboardData || !input) {
     return
