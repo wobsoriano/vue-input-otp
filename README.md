@@ -176,10 +176,12 @@ function onComplete() {
 </script>
 
 <template>
-    <form ref="formRef">
-        <OTPInput @complete="onComplete" />
-        <button ref="buttonRef">Submit</button>
-    </form>
+  <form ref="formRef">
+    <OTPInput @complete="onComplete" />
+    <button ref="buttonRef">
+      Submit
+    </button>
+  </form>
 </template>
 ```
 
@@ -194,10 +196,10 @@ import { OTPInput } from 'vue-input-otp'
 </script>
 
 <template>
-    <form>
-        <!-- Pro tip: accepts all common HTML input props... -->
-        <OTPInput autoFocus />
-    </form>
+  <form>
+    <!-- Pro tip: accepts all common HTML input props... -->
+    <OTPInput auto-focus />
+  </form>
 </template>
 ```
 
