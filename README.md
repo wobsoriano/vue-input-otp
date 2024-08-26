@@ -158,6 +158,7 @@ The root container. Define settings for the input via props. Then, pass in child
 
 <details>
 <summary>Automatic form submission on OTP completion</summary>
+
 ```vue
 <script setup>
 import { OTPInput } from 'vue-input-otp'
@@ -181,10 +182,12 @@ function onComplete() {
     </form>
 </template>
 ```
+
 </details>
 
 <details>
 <summary>Automatically focus the input when the page loads</summary>
+
 ```vue
 <script setup>
 import { OTPInput } from 'vue-input-otp'
@@ -197,6 +200,7 @@ import { OTPInput } from 'vue-input-otp'
     </form>
 </template>
 ```
+
 </details>
 
 ## Caveats
