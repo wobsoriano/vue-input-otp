@@ -51,12 +51,12 @@ const containerRef = ref<HTMLDivElement | null>(null)
 //   isIOS: typeof window !== 'undefined' && window?.CSS?.supports?.('-webkit-touch-callout', 'none'),
 // })
 const inputMetadataRef = ref<{
-  prev: [number | null, number | null, 'none' | 'forward' | 'backward' | null]
+  prev: [number | null | undefined, number | null | undefined, 'none' | 'forward' | 'backward' | null | undefined]
 }>({
   prev: [
-    null,
-    null,
-    null,
+    inputRef.value?.selectionStart,
+    inputRef.value?.selectionEnd,
+    inputRef.value?.selectionDirection,
   ],
 })
 
@@ -126,9 +126,9 @@ onMounted(() => {
         else if (_ml > 1 && _val.length > 1) {
           let offset = 0
           if (_prev[0] !== null && _prev[1] !== null) {
-            direction = c < _prev[1] ? 'backward' : 'forward'
+            direction = c < _prev[1]! ? 'backward' : 'forward'
             const wasPreviouslyInserting
-                    = _prev[0] === _prev[1] && _prev[0] < _ml
+                    = _prev[0] === _prev[1] && _prev[0]! < _ml
             if (direction === 'backward' && !wasPreviouslyInserting) {
               offset = -1
             }
@@ -236,7 +236,7 @@ watch([internalValue, isFocused], () => {
       // TODO: Below is expected to be nulls
       mirrorSelectionStart.value = s!
       mirrorSelectionEnd.value = e!
-      inputMetadataRef.value.prev = [s!, e!, dir!]
+      inputMetadataRef.value.prev = [s, e, dir]
     }
   })
 }, {
