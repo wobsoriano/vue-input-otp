@@ -1,5 +1,11 @@
 # vue-input-otp
 
+## 0.2.2
+
+### Patch Changes
+
+- 600016f: Add package keywords
+
 ## 0.2.1
 
 ### Patch Changes
