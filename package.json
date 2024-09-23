@@ -11,7 +11,12 @@
     "url": "git+https://github.com/wobsoriano/vue-input-otp.git"
   },
   "bugs": "https://github.com/wobsoriano/vue-input-otp/issues",
-  "keywords": [],
+  "keywords": [
+    "vue",
+    "otp",
+    "input",
+    "accessible"
+  ],
   "sideEffects": false,
   "exports": {
     ".": {
