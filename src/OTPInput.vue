@@ -47,8 +47,6 @@ const pwmb = usePasswordManagerBadge({
   isFocused,
 })
 
-const maxLength = computed(() => Number(props.maxlength))
-
 function safeInsertRule(sheet: CSSStyleSheet, rule: string) {
   try {
     sheet.insertRule(rule)
@@ -102,7 +100,7 @@ onMounted(() => {
   })
 })
 
-watch([() => maxLength.value, internalValue], ([maxlength, value], [_, previousValue]) => {
+watch([() => props.maxlength, internalValue], ([maxlength, value], [_, previousValue]) => {
   if (value !== previousValue && value.length === maxlength)
     emit('complete', value)
 }, { immediate: true })
@@ -169,7 +167,7 @@ function _selectListener() {
 function _inputListener(e: Event) {
   syncTimeouts(_selectListener)
 
-  const newValue = (e.currentTarget as HTMLInputElement).value.slice(0, maxLength.value)
+  const newValue = (e.currentTarget as HTMLInputElement).value.slice(0, props.maxlength)
 
   if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue)) {
     e.preventDefault()
@@ -193,7 +191,7 @@ function _pasteListener(e: ClipboardEvent) {
   const newValueUncapped = isReplacing
     ? internalValue.value.slice(0, start) + (content ?? '') + internalValue.value.slice(end) // Replacing
     : internalValue.value.slice(0, start) + (content ?? '') + internalValue.value.slice(start) // Inserting
-  const newValue = newValueUncapped.slice(0, maxLength.value)
+  const newValue = newValueUncapped.slice(0, props.maxlength)
 
   if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue))
     return
@@ -201,7 +199,7 @@ function _pasteListener(e: ClipboardEvent) {
   internalValue.value = newValue
   emit('input', e)
 
-  const _start = Math.min(newValue.length, maxLength.value - 1)
+  const _start = Math.min(newValue.length, props.maxlength - 1)
   const _end = newValue.length
   inputRef.value?.setSelectionRange(_start, _end)
   mirrorSelectionStart.value = _start
@@ -312,7 +310,7 @@ function onDoubleClick(e: MouseEvent) {
 function onFocus(e: FocusEvent) {
   const input = inputRef.value
   if (input) {
-    const start = Math.min(input.value.length, maxLength.value - 1)
+    const start = Math.min(input.value.length, props.maxlength - 1)
     const end = input.value.length
     input.setSelectionRange(start, end)
     mirrorSelectionStart.value = start
@@ -324,7 +322,7 @@ function onFocus(e: FocusEvent) {
 }
 
 const slots = computed<SlotProps[]>(() => {
-  return Array.from({ length: maxLength.value }).map((_, slotIdx) => {
+  return Array.from({ length: props.maxlength }).map((_, slotIdx) => {
     const isActive
       = isFocused.value
       && mirrorSelectionStart.value !== null
