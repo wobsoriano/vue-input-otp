@@ -5,6 +5,7 @@ import type { Metadata, OTPInputEmits, OTPInputProps, SlotProps } from './types'
 import { SelectionType } from './types'
 import { REGEXP_ONLY_DIGITS } from './regexp'
 import { syncTimeouts } from './sync-timeouts'
+import { usePasswordManagerBadge } from './use-pwm-badge'
 
 defineOptions({
   name: 'OTPInput',
@@ -16,6 +17,7 @@ const props = withDefaults(defineProps<OTPInputProps>(), {
   inputmode: 'numeric',
   autocomplete: 'one-time-code',
   textAlign: 'left',
+  pushPasswordManagerStrategy: 'increase-width',
 })
 
 const emit = defineEmits<OTPInputEmits>()
@@ -36,9 +38,25 @@ const mirrorSelectionEnd = ref<number | null>(null)
 
 const inputRef = ref<HTMLInputElement & { __metadata__?: Metadata } | null>(null)
 
-defineExpose({
-  ref: inputRef,
+const containerRef = ref<HTMLDivElement | null>(null)
+
+const pwmb = usePasswordManagerBadge({
+  containerRef,
+  inputRef,
+  pushPasswordManagerStrategy: props.pushPasswordManagerStrategy,
+  isFocused,
 })
+
+const maxLength = computed(() => Number(props.maxlength))
+
+function safeInsertRule(sheet: CSSStyleSheet, rule: string) {
+  try {
+    sheet.insertRule(rule)
+  }
+  catch {
+    console.error('input-otp could not insert CSS rule:', rule)
+  }
+}
 
 onMounted(() => {
   const el = inputRef.value
@@ -58,9 +76,12 @@ onMounted(() => {
   styleEl.id = 'input-otp-style'
   document.head.appendChild(styleEl)
   const styleSheet = styleEl.sheet
-  styleSheet?.insertRule(
-    '[data-input-otp]::selection { background: transparent !important; }',
-  )
+  if (styleSheet) {
+    safeInsertRule(styleSheet, '[data-input-otp]::selection { background: transparent !important; }')
+    // Add NoScript CSS fallback
+    safeInsertRule(styleSheet, 'noscript [data-input-otp] { color: inherit !important; letter-spacing: normal !important; }')
+    safeInsertRule(styleSheet, '@media (prefers-color-scheme: dark) { noscript [data-input-otp] { color: #fff !important; } }')
+  }
 
   const updateRootHeight = () => {
     if (el)
@@ -81,7 +102,7 @@ onMounted(() => {
   })
 })
 
-watch([() => props.maxlength, internalValue], ([maxlength, value], [_, previousValue]) => {
+watch([() => maxLength.value, internalValue], ([maxlength, value], [_, previousValue]) => {
   if (value !== previousValue && value.length === maxlength)
     emit('complete', value)
 }, { immediate: true })
@@ -148,7 +169,7 @@ function _selectListener() {
 function _inputListener(e: Event) {
   syncTimeouts(_selectListener)
 
-  const newValue = (e.currentTarget as HTMLInputElement).value.slice(0, props.maxlength)
+  const newValue = (e.currentTarget as HTMLInputElement).value.slice(0, maxLength.value)
 
   if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue)) {
     e.preventDefault()
@@ -164,15 +185,15 @@ function _pasteListener(e: ClipboardEvent) {
   const content = e.clipboardData?.getData('text/plain')
   e.preventDefault()
 
-  const start = inputRef.value?.selectionStart
-  const end = inputRef.value?.selectionEnd
+  const start = inputRef.value?.selectionStart ?? 0
+  const end = inputRef.value?.selectionEnd ?? 0
 
   const isReplacing = start !== end
 
   const newValueUncapped = isReplacing
-    ? internalValue.value.slice(0, start!) + content + internalValue.value.slice(end!) // Replacing
-    : internalValue.value.slice(0, start!) + content + internalValue.value.slice(start!) // Inserting
-  const newValue = newValueUncapped.slice(0, props.maxlength)
+    ? internalValue.value.slice(0, start) + (content ?? '') + internalValue.value.slice(end) // Replacing
+    : internalValue.value.slice(0, start) + (content ?? '') + internalValue.value.slice(start) // Inserting
+  const newValue = newValueUncapped.slice(0, maxLength.value)
 
   if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue))
     return
@@ -180,7 +201,7 @@ function _pasteListener(e: ClipboardEvent) {
   internalValue.value = newValue
   emit('input', e)
 
-  const _start = Math.min(newValue.length, props.maxlength - 1)
+  const _start = Math.min(newValue.length, maxLength.value - 1)
   const _end = newValue.length
   inputRef.value?.setSelectionRange(_start, _end)
   mirrorSelectionStart.value = _start
@@ -288,8 +309,22 @@ function onDoubleClick(e: MouseEvent) {
   emit('dblclick', e)
 }
 
+function onFocus(e: FocusEvent) {
+  const input = inputRef.value
+  if (input) {
+    const start = Math.min(input.value.length, maxLength.value - 1)
+    const end = input.value.length
+    input.setSelectionRange(start, end)
+    mirrorSelectionStart.value = start
+    mirrorSelectionEnd.value = end
+  }
+  isFocused.value = true
+
+  emit('focus', e)
+}
+
 const slots = computed<SlotProps[]>(() => {
-  return Array.from({ length: Number(props.maxlength) }).map((_, slotIdx) => {
+  return Array.from({ length: maxLength.value }).map((_, slotIdx) => {
     const isActive
       = isFocused.value
       && mirrorSelectionStart.value !== null
@@ -299,29 +334,36 @@ const slots = computed<SlotProps[]>(() => {
       || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
 
     const char = internalValue.value[slotIdx] !== undefined ? internalValue.value[slotIdx] : null
+    const placeholderChar = char === null ? props.placeholder?.[slotIdx] ?? null : null
 
     return {
       char,
       isActive,
       hasFakeCaret: isActive && char === null,
+      placeholder: placeholderChar,
     }
   })
 })
 
 const attrs = useAttrs()
 const inputProps = computed(() => {
-  const { containerClass, value, ...rest } = props
+  const { containerClass, placeholder, pushPasswordManagerStrategy, ...rest } = props
   return {
-    ...attrs, // putting attrs for now until I can extract the input props from Vue
+    ...attrs,
     ...rest,
     pattern: regexp.value?.source,
   }
 })
 
-const inputStyle = {
+const inputStyle = computed(() => ({
   position: 'absolute',
   inset: 0,
-  width: '100%',
+  width: pwmb.willPushPWMBadge
+    ? `calc(100% + ${pwmb.PWM_BADGE_SPACE_WIDTH})`
+    : '100%',
+  clipPath: pwmb.willPushPWMBadge
+    ? `inset(0 ${pwmb.PWM_BADGE_SPACE_WIDTH} 0 0)`
+    : undefined,
   height: '100%',
   display: 'flex',
   textAlign: props.textAlign,
@@ -335,11 +377,18 @@ const inputStyle = {
   lineHeight: '1',
   letterSpacing: '-.5em',
   fontSize: 'var(--root-height)',
-} satisfies CSSProperties
+  fontFamily: 'monospace',
+  fontVariantNumeric: 'tabular-nums',
+} satisfies CSSProperties))
+
+defineExpose({
+  ref: inputRef,
+})
 </script>
 
 <template>
   <div
+    ref="containerRef"
     data-input-otp-container
     style="position: relative; user-select: none; -webkit-user-select: none;"
     :style="{ cursor: disabled ? 'default' : 'text' }"
@@ -413,18 +462,7 @@ const inputStyle = {
 
         emit('keyup', e)
       }"
-      @focus="(e) => {
-        if (inputRef) {
-          const start = Math.min(inputRef.value.length, maxlength - 1)
-          const end = inputRef.value.length
-          inputRef.setSelectionRange(start, end)
-          mirrorSelectionStart = start
-          mirrorSelectionEnd = end
-        }
-        isFocused = true
-
-        emit('focus', e)
-      }"
+      @focus="onFocus"
       @blur="(e) => {
         isFocused = false
 

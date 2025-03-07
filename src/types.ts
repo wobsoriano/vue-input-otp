@@ -1,3 +1,5 @@
+import type { PWMBadgeStrategy } from './use-pwm-badge'
+
 // Need to figure out how to import this from Vue without causing "Failed to resolve extends base type" error
 export interface InputHTMLAttributes {
   accept?: string
@@ -36,46 +38,51 @@ export interface InputHTMLAttributes {
   width?: number
 }
 
-export interface OTPInputProps extends InputHTMLAttributes {
+export interface OTPInputProps {
   maxlength: number
+  pattern?: string | RegExp
+  inputmode?: 'text' | 'numeric' | 'decimal' | 'tel'
+  autocomplete?: string
   textAlign?: 'left' | 'center' | 'right'
-  inputmode?: 'numeric' | 'text'
   containerClass?: string
+  disabled?: boolean
+  placeholder?: string
+  pushPasswordManagerStrategy?: PWMBadgeStrategy
 }
 
 export interface OTPInputEmits {
-  (event: 'complete', value: string): void
-  (event: 'change', e: Event): void
-  (event: 'select', e: Event): void
-  (event: 'input', e: Event): void
-  (event: 'keydown', e: KeyboardEvent): void
-  (event: 'keyup', e: KeyboardEvent): void
-  (event: 'focus', e: FocusEvent): void
-  (event: 'blur', e: FocusEvent): void
-  (event: 'mouseover', e: MouseEvent): void
-  (event: 'mouseleave', e: MouseEvent): void
-  (event: 'mousedown', e: MouseEvent): void
-  (event: 'paste', e: ClipboardEvent): void
-  (event: 'touchend', e: TouchEvent): void
-  (event: 'touchmove', e: TouchEvent): void
-  (event: 'click', e: MouseEvent): void
-  (event: 'dblclick', e: MouseEvent): void
+  (e: 'input', event: Event): void
+  (e: 'change', event: Event): void
+  (e: 'focus', event: FocusEvent): void
+  (e: 'blur', event: FocusEvent): void
+  (e: 'click', event: MouseEvent): void
+  (e: 'dblclick', event: MouseEvent): void
+  (e: 'mouseover', event: MouseEvent): void
+  (e: 'mouseleave', event: MouseEvent): void
+  (e: 'mousedown', event: MouseEvent): void
+  (e: 'keydown', event: KeyboardEvent): void
+  (e: 'keyup', event: KeyboardEvent): void
+  (e: 'paste', event: ClipboardEvent): void
+  (e: 'select', event: Event): void
+  (e: 'touchend', event: TouchEvent): void
+  (e: 'complete', value: string): void
 }
 
 export enum SelectionType {
-  CARET = 0,
-  CHAR = 1,
-  MULTI = 2,
+  CARET = 'CARET',
+  CHAR = 'CHAR',
+  MULTI = 'MULTI',
 }
 
 export interface Metadata {
-  lastClickTimestamp: number
+  lastClickTimestamp?: number
 }
 
 export interface SlotProps {
-  isActive: boolean
   char: string | null
+  isActive: boolean
   hasFakeCaret: boolean
+  placeholder?: string | null
 }
 
 export interface RenderProps {
