@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue'
-import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
 import type { OTPInputEmits, OTPInputProps, SlotProps } from './types'
+import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
+import { NoSciptCssFallback, NOSCRIPT_CSS_FALLBACK } from './NoSciptCssFallback'
 import { REGEXP_ONLY_DIGITS } from './regexp'
 import { syncTimeouts } from './sync-timeouts'
-import { usePasswordManagerBadge } from './use-pwm-badge'
 import { usePrevious } from './use-previous'
-import { NOSCRIPT_CSS_FALLBACK, NoSciptCssFallback } from './NoSciptCssFallback'
+import { usePasswordManagerBadge } from './use-pwm-badge'
 
 defineOptions({
   name: 'OTPInput',
@@ -128,7 +128,7 @@ onMounted(() => {
           if (_prev[0] !== null && _prev[1] !== null) {
             direction = c < _prev[1]! ? 'backward' : 'forward'
             const wasPreviouslyInserting
-                    = _prev[0] === _prev[1] && _prev[0]! < _ml
+              = _prev[0] === _prev[1] && _prev[0]! < _ml
             if (direction === 'backward' && !wasPreviouslyInserting) {
               offset = -1
             }
@@ -173,7 +173,7 @@ onMounted(() => {
 
     if (styleEl.sheet) {
       const autofillStyles
-              = 'background: transparent !important; color: transparent !important; border-color: transparent !important; opacity: 0 !important; box-shadow: none !important; -webkit-box-shadow: none !important; -webkit-text-fill-color: transparent !important;'
+        = 'background: transparent !important; color: transparent !important; border-color: transparent !important; opacity: 0 !important; box-shadow: none !important; -webkit-box-shadow: none !important; -webkit-text-fill-color: transparent !important;'
 
       safeInsertRule(
         styleEl.sheet,
@@ -272,8 +272,8 @@ function _inputListener(e: Event) {
     return
   }
   const maybeHasDeleted
-          = typeof previousValue.value === 'string'
-          && newValue.length < previousValue.value.length
+    = typeof previousValue.value === 'string'
+      && newValue.length < previousValue.value.length
   if (maybeHasDeleted) {
     // Since cutting/deleting text doesn't trigger
     // selectionchange event, we'll have to dispatch it manually.
@@ -401,11 +401,11 @@ const contextValue = computed<SlotProps[]>(() => {
   return Array.from({ length: Number(props.maxlength) }).map((_, slotIdx) => {
     const isActive
       = isFocused.value
-      && mirrorSelectionStart.value !== null
-      && mirrorSelectionEnd.value !== null
-      && ((mirrorSelectionStart.value === mirrorSelectionEnd.value
-      && slotIdx === mirrorSelectionStart.value)
-      || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
+        && mirrorSelectionStart.value !== null
+        && mirrorSelectionEnd.value !== null
+        && ((mirrorSelectionStart.value === mirrorSelectionEnd.value
+          && slotIdx === mirrorSelectionStart.value)
+        || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
 
     const char = internalValue.value[slotIdx] !== undefined ? internalValue.value[slotIdx] : null
 

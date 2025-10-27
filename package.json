@@ -2,6 +2,7 @@
   "name": "vue-input-otp",
   "type": "module",
   "version": "0.2.2",
+  "packageManager": "pnpm@10.19.0",
   "description": "",
   "author": "Robert Soriano <sorianorobertc@gmail.com>",
   "license": "MIT",
@@ -19,30 +20,18 @@
   ],
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*",
-        "./*"
-      ]
-    }
-  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup --onSuccess \"pnpm build:dts\"",
-    "build:dts": "vue-tsc --declaration --emitDeclarationOnly",
-    "dev": "tsup --watch --onSuccess \"pnpm build:dts && pnpm --filter website dev\"",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "pnpm build && changeset publish",
@@ -52,14 +41,14 @@
     "vue": "^3.2.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.27.1",
-    "@changesets/cli": "^2.27.7",
-    "@vue/tsconfig": "^0.5.1",
-    "eslint": "^9.9.0",
-    "tsup": "^8.2.4",
-    "typescript": "^5.5.4",
-    "unplugin-vue": "^5.0.5",
-    "vue": "^3.4.38",
-    "vue-tsc": "^2.0.29"
+    "@antfu/eslint-config": "^6.1.0",
+    "@changesets/cli": "^2.29.7",
+    "@vue/tsconfig": "^0.8.1",
+    "eslint": "^9.38.0",
+    "tsdown": "^0.15.10",
+    "typescript": "^5.9.3",
+    "unplugin-vue": "^7.0.3",
+    "vue": "^3.5.22",
+    "vue-tsc": "^3.1.2"
   }
 }
