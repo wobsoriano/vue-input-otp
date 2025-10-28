@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue'
-import type { OTPInputEmits, OTPInputProps, SlotProps } from './types'
-import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
+import type { OTPInputEmits, OTPInputProps, RenderProps, SlotProps } from './types'
+import { computed, onMounted, onUnmounted, provide, ref, useAttrs, watch, watchEffect } from 'vue'
 import { NoSciptCssFallback, NOSCRIPT_CSS_FALLBACK } from './NoSciptCssFallback'
 import { REGEXP_ONLY_DIGITS } from './regexp'
+import { PublicVueOTPContextKey } from './symbols'
 import { syncTimeouts } from './sync-timeouts'
 import { usePrevious } from './use-previous'
 import { usePasswordManagerBadge } from './use-pwm-badge'
@@ -400,25 +401,33 @@ const inputStyle = computed<StyleValue>(
   }),
 )
 
-const contextValue = computed<SlotProps[]>(() => {
-  return Array.from({ length: Number(props.maxlength) }).map((_, slotIdx) => {
-    const isActive
-      = isFocused.value
-        && mirrorSelectionStart.value !== null
-        && mirrorSelectionEnd.value !== null
-        && ((mirrorSelectionStart.value === mirrorSelectionEnd.value
-          && slotIdx === mirrorSelectionStart.value)
-        || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
+const contextValue = computed<RenderProps>(() => {
+  return {
+    slots: Array.from({ length: Number(props.maxlength) }).map((_, slotIdx) => {
+      const isActive
+        = isFocused.value
+          && mirrorSelectionStart.value !== null
+          && mirrorSelectionEnd.value !== null
+          && ((mirrorSelectionStart.value === mirrorSelectionEnd.value
+            && slotIdx === mirrorSelectionStart.value)
+          || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
 
-    const char = internalValue.value[slotIdx] !== undefined ? internalValue.value[slotIdx] : null
+      const char = internalValue.value[slotIdx] !== undefined ? internalValue.value[slotIdx] : null
+      const placeholderChar = internalValue.value[0] !== undefined ? null : props?.placeholder?.[slotIdx] ?? null
 
-    return {
-      char,
-      isActive,
-      hasFakeCaret: isActive && char === null,
-    }
-  })
+      return {
+        char,
+        placeholderChar,
+        isActive,
+        hasFakeCaret: isActive && char === null,
+      }
+    }),
+    isFocused: isFocused.value,
+    isHovering: !props.disabled && isHoveringInput.value,
+  }
 })
+
+provide(PublicVueOTPContextKey, contextValue)
 
 // reka-ui forwardRef
 defineExpose(Object.defineProperty({}, '$el', {
@@ -437,7 +446,7 @@ defineExpose(Object.defineProperty({}, '$el', {
     :style="rootStyle"
     :class="containerClass"
   >
-    <slot :slots="contextValue" :is-focused="isFocused" :is-hovering="!disabled && isHoveringInput" />
+    <slot :slots="contextValue.slots" :is-focused="isFocused" :is-hovering="!disabled && isHoveringInput" />
     <div style="position: absolute; inset: 0; pointer-events: none;">
       <input
         ref="inputRef"

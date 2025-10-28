@@ -59,12 +59,6 @@ export interface OTPInputEmits {
   (event: 'paste', e: ClipboardEvent): void
 }
 
-export enum SelectionType {
-  CARET = 0,
-  CHAR = 1,
-  MULTI = 2,
-}
-
 export interface Metadata {
   lastClickTimestamp: number
 }
@@ -72,6 +66,7 @@ export interface Metadata {
 export interface SlotProps {
   isActive: boolean
   char: string | null
+  placeholderChar: string | null
   hasFakeCaret: boolean
 }
 
