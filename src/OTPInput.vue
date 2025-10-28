@@ -14,6 +14,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<OTPInputProps>(), {
+  value: '',
   pattern: REGEXP_ONLY_DIGITS,
   inputmode: 'numeric',
   autocomplete: 'one-time-code',
@@ -40,9 +41,6 @@ const mirrorSelectionStart = ref<number | null>(null)
 const mirrorSelectionEnd = ref<number | null>(null)
 
 const inputRef = ref<HTMLInputElement | null>(null)
-defineExpose({
-  ref: inputRef,
-})
 
 const containerRef = ref<HTMLDivElement | null>(null)
 // TODO: Not sure if we need this, refactor in the future
@@ -416,6 +414,13 @@ const contextValue = computed<SlotProps[]>(() => {
     }
   })
 })
+
+// reka-ui forwardRef
+defineExpose(Object.defineProperty({}, '$el', {
+  enumerable: true,
+  configurable: true,
+  get: () => inputRef,
+}))
 </script>
 
 <template>
@@ -433,8 +438,10 @@ const contextValue = computed<SlotProps[]>(() => {
         ref="inputRef"
         :value="internalValue"
         data-input-otp
+        :data-input-otp-placeholder-shown="value.length === 0 || undefined"
         :data-input-otp-mss="mirrorSelectionStart"
         :data-input-otp-mse="mirrorSelectionEnd"
+        :aria-placeholder="placeholder"
         :style="inputStyle"
         v-bind="inputProps"
         @mouseover="(e) => {
