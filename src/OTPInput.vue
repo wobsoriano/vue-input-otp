@@ -14,18 +14,22 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<OTPInputProps>(), {
-  value: '',
   pattern: REGEXP_ONLY_DIGITS,
   inputmode: 'numeric',
   autocomplete: 'one-time-code',
   textAlign: 'left',
   pushPasswordManagerStrategy: 'increase-width',
   noScriptCssFallback: NOSCRIPT_CSS_FALLBACK,
+  defaultValue: '',
 })
 
 const emit = defineEmits<OTPInputEmits>()
 
-const internalValue = defineModel({ default: '' })
+const internalValue = defineModel<string>({
+  default(props) {
+    return props.defaultValue
+  },
+})
 const previousValue = usePrevious(internalValue)
 
 const regexp = computed(() => props.pattern
@@ -438,7 +442,7 @@ defineExpose(Object.defineProperty({}, '$el', {
         ref="inputRef"
         :value="internalValue"
         data-input-otp
-        :data-input-otp-placeholder-shown="value.length === 0 || undefined"
+        :data-input-otp-placeholder-shown="internalValue.length === 0 || undefined"
         :data-input-otp-mss="mirrorSelectionStart"
         :data-input-otp-mse="mirrorSelectionEnd"
         :aria-placeholder="placeholder"
