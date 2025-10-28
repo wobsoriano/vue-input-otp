@@ -24,7 +24,7 @@ const willAnimateCaret = computed(() => props.animateIdx === 2)
     )"
   >
     <div
-      :class="cn('duration-1000', {
+      :class="cn('duration-1000 fill-mode-backwards', {
         'lg:animate-in lg:fade-in': willAnimateChar,
         'lg:delay-1500': animateIdx === 0,
         'lg:delay-2000': animateIdx === 1,
