@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { balloons } from 'balloons-js'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
 import { toast } from 'vue-sonner'
 import { cn } from '@/lib/utils'
-import { OTPInput, REGEXP_ONLY_DIGITS } from '../../../src/index'
 import Slot from './Slot.vue'
 
 const input = ref()
