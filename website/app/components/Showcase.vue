@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { balloons } from 'balloons-js'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
-import { OTPInput, REGEXP_ONLY_DIGITS } from 'vue-input-otp'
 import { toast } from 'vue-sonner'
 import { cn } from '@/lib/utils'
+import { OTPInput, REGEXP_ONLY_DIGITS } from '../../../src/index'
 import Slot from './Slot.vue'
 
-const input = ref('12')
-const inputRef = ref<{ ref: HTMLInputElement } | null>(null)
+const input = ref()
+const inputRef = useTemplateRef('inputRef')
 const disabled = ref(false)
 
 let t1: ReturnType<typeof setTimeout>
@@ -24,7 +24,7 @@ onMounted(() => {
     }, 1_900)
     t2 = setTimeout(
       () => {
-        inputRef.value?.ref.focus()
+        inputRef.value?.$el.focus()
       },
       isMobile ? 0 : 2_500,
     )
@@ -37,7 +37,7 @@ onUnmounted(() => {
 })
 
 async function onSubmit(e?: Event | string) {
-  inputRef.value?.ref.select()
+  inputRef.value?.$el.select()
   await new Promise(r => setTimeout(r, 1_00))
 
   if (typeof e !== 'string')
@@ -52,7 +52,7 @@ async function onSubmit(e?: Event | string) {
 
   input.value = ''
   setTimeout(() => {
-    inputRef.value?.ref?.blur()
+    inputRef.value?.$el.blur()
   }, 20)
 }
 </script>
@@ -63,6 +63,7 @@ async function onSubmit(e?: Event | string) {
       ref="inputRef"
       v-slot="{ slots, isFocused }"
       v-model="input"
+      default-value="12"
       :disabled="disabled"
       :maxlength="6"
       :pattern="REGEXP_ONLY_DIGITS"
