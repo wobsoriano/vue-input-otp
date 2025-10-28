@@ -87,7 +87,7 @@ export function usePasswordManagerBadge({
       const sel = [input.selectionStart, input.selectionEnd]
       input.blur()
       input.focus()
-      input.setSelectionRange(sel[0], sel[1])
+      input.setSelectionRange(sel[0]!, sel[1]!)
 
       pwmMetadata.value.refocused = true
     }

@@ -107,7 +107,8 @@ onMounted(() => {
     // Algorithm
     let start = -1
     let end = -1
-    let direction: 'forward' | 'backward' | 'none'
+    // eslint-disable-next-line no-undef-init
+    let direction: 'forward' | 'backward' | 'none' | undefined = undefined
     if (_val.length !== 0 && _s !== null && _e !== null) {
       const isSingleCaret = _s === _e
       const isInsertMode = _s === _val.length && _val.length < _ml
@@ -141,7 +142,6 @@ onMounted(() => {
       }
 
       if (start !== -1 && end !== -1 && start !== end) {
-        // @ts-expect-error: direction is defined
         input.setSelectionRange(start, end, direction)
       }
     }
@@ -149,7 +149,6 @@ onMounted(() => {
     // Finally, update the state
     const s = start !== -1 ? start : _s
     const e = end !== -1 ? end : _e
-    // @ts-expect-error: direction is defined
     const dir = direction ?? _dir
     mirrorSelectionStart.value = s
     mirrorSelectionEnd.value = e
