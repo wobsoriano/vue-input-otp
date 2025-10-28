@@ -59,10 +59,6 @@ export interface OTPInputEmits {
   (event: 'paste', e: ClipboardEvent): void
 }
 
-export interface Metadata {
-  lastClickTimestamp: number
-}
-
 export interface SlotProps {
   isActive: boolean
   char: string | null
