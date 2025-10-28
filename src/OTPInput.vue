@@ -47,11 +47,9 @@ const mirrorSelectionEnd = ref<number | null>(null)
 const inputRef = ref<HTMLInputElement | null>(null)
 
 const containerRef = ref<HTMLDivElement | null>(null)
-// TODO: Not sure if we need this, refactor in the future
-// See https://github.com/guilhermerodz/input-otp/blob/6d74289761f3c24fbb2ab907aff481e1038b7e06/packages/input-otp/src/input.tsx#L64
-// const initialLoadRef = ref({
-//   isIOS: typeof window !== 'undefined' && window?.CSS?.supports?.('-webkit-touch-callout', 'none'),
-// })
+const isIOS = ref(() => {
+  return typeof window !== 'undefined' && window?.CSS?.supports?.('-webkit-touch-callout', 'none')
+})
 const inputMetadataRef = ref<{
   prev: [number | null | undefined, number | null | undefined, 'none' | 'forward' | 'backward' | null | undefined]
 }>({
@@ -302,11 +300,14 @@ function _focusListener() {
 // Fix iOS pasting
 function _pasteListener(e: ClipboardEvent) {
   const input = inputRef.value
-  if (!e.clipboardData || !input) {
+  if (!props.pasteTransformer && (!isIOS.value || !e.clipboardData || !input)) {
     return
   }
 
-  const content = e.clipboardData.getData('text/plain')
+  const _content = e?.clipboardData?.getData('text/plain')
+  const content = props?.pasteTransformer
+    ? props.pasteTransformer(_content)
+    : _content
   e.preventDefault()
 
   const start = inputRef.value?.selectionStart
@@ -329,7 +330,7 @@ function _pasteListener(e: ClipboardEvent) {
   const _start = Math.min(newValue.length, props.maxlength - 1)
   const _end = newValue.length
 
-  input.setSelectionRange(_start, _end)
+  input?.setSelectionRange(_start, _end)
   mirrorSelectionStart.value = _start
   mirrorSelectionEnd.value = _end
 }

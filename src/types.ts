@@ -44,6 +44,7 @@ export interface OTPInputProps extends InputHTMLAttributes {
   pushPasswordManagerStrategy?: 'increase-width' | 'none'
   noScriptCssFallback?: string | null
   defaultValue?: any
+  pasteTransformer?: (pasted: string | undefined) => string
 }
 
 export interface OTPInputEmits {
