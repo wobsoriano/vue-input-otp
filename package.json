@@ -44,11 +44,16 @@
   "peerDependencies": {
     "vue": "^3.2.0"
   },
+  "dependencies": {
+    "@vueuse/core": "^12.5.0",
+    "reka-ui": "^2.0.0"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^6.1.0",
     "@changesets/cli": "^2.29.7",
     "@vue/tsconfig": "^0.8.1",
     "eslint": "^9.38.0",
+    "reka-ui": "^2.6.0",
     "taze": "^19.8.1",
     "tsdown": "^0.15.11",
     "typescript": "^5.9.3",

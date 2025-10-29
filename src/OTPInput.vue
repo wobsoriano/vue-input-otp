@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue'
-import type { OTPInputEmits, OTPInputProps, RenderProps, SlotProps } from './types'
-import { computed, onMounted, onUnmounted, provide, ref, useAttrs, watch, watchEffect } from 'vue'
+import type { OTPInputEmits, OTPInputProps, RenderProps } from './types'
+import { reactiveOmit } from '@vueuse/core'
+import { useForwardProps } from 'reka-ui'
+import { computed, onMounted, onUnmounted, provide, ref, watch, watchEffect } from 'vue'
 import { NoSciptCssFallback, NOSCRIPT_CSS_FALLBACK } from './NoSciptCssFallback'
 import { REGEXP_ONLY_DIGITS } from './regexp'
 import { PublicVueOTPContextKey } from './symbols'
@@ -335,15 +337,9 @@ function _pasteListener(e: ClipboardEvent) {
   mirrorSelectionEnd.value = _end
 }
 
-const attrs = useAttrs()
-const inputProps = computed(() => {
-  const { containerClass, value, ...rest } = props
-  return {
-    ...attrs, // putting attrs for now until I can extract the input props from Vue
-    ...rest,
-    pattern: regexp.value?.source,
-  }
-})
+// @ts-expect-error modelValue props from defineModel?
+const delegatedProps = reactiveOmit(props, 'containerClass', 'value', 'pattern', 'defaultValue', 'pushPasswordManagerStrategy', 'noScriptCssFallback', 'modelValue')
+const inputProps = useForwardProps(delegatedProps)
 
 /** Styles */
 const rootStyle = computed<StyleValue>(
@@ -456,7 +452,8 @@ defineExpose(Object.defineProperty({}, '$el', {
         :data-input-otp-mse="mirrorSelectionEnd"
         :aria-placeholder="placeholder"
         :style="inputStyle"
-        v-bind="inputProps"
+        :pattern="regexp?.source"
+        v-bind="{ ...inputProps, ...$attrs }"
         @mouseover="(e) => {
           isHoveringInput = true
           emit('mouseover', e)
