@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue'
 import type { OTPInputEmits, OTPInputProps, RenderProps } from './types'
-import { reactiveOmit } from '@vueuse/core'
+import { defaultDocument, defaultWindow, reactiveOmit, useEventListener, usePrevious } from '@vueuse/core'
 import { useForwardProps } from 'reka-ui'
-import { computed, onMounted, onUnmounted, provide, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, onUnmounted, provide, shallowRef, watch, watchEffect } from 'vue'
 import { NoSciptCssFallback, NOSCRIPT_CSS_FALLBACK } from './NoSciptCssFallback'
 import { REGEXP_ONLY_DIGITS } from './regexp'
 import { PublicVueOTPContextKey } from './symbols'
 import { syncTimeouts } from './sync-timeouts'
-import { usePrevious } from './use-previous'
 import { usePasswordManagerBadge } from './use-pwm-badge'
 
 defineOptions({
@@ -28,7 +27,7 @@ const props = withDefaults(defineProps<OTPInputProps>(), {
 
 const emit = defineEmits<OTPInputEmits>()
 
-const internalValue = defineModel<string>({
+const [internalValue] = defineModel<string>({
   default(props) {
     return props.defaultValue
   },
@@ -42,26 +41,26 @@ const regexp = computed(() => props.pattern
   : null)
 
 /** Mirrors for UI rendering purpose only */
-const isHoveringInput = ref(false)
-const isFocused = ref(false)
-const mirrorSelectionStart = ref<number | null>(null)
-const mirrorSelectionEnd = ref<number | null>(null)
+const isHoveringInput = shallowRef(false)
+const isFocused = shallowRef(false)
+const mirrorSelectionStart = shallowRef<number | null>(null)
+const mirrorSelectionEnd = shallowRef<number | null>(null)
 
-const inputRef = ref<HTMLInputElement | null>(null)
+const inputRef = shallowRef<HTMLInputElement | null>(null)
 
-const containerRef = ref<HTMLDivElement | null>(null)
-const isIOS = ref(() => {
-  return typeof window !== 'undefined' && window?.CSS?.supports?.('-webkit-touch-callout', 'none')
-})
-const inputMetadataRef = ref<{
+const containerRef = shallowRef<HTMLDivElement | null>(null)
+const isIOS = defaultWindow?.CSS?.supports?.('-webkit-touch-callout', 'none')
+
+// eslint-disable-next-line prefer-const
+let inputMetadataRef: {
   prev: [number | null | undefined, number | null | undefined, 'none' | 'forward' | 'backward' | null | undefined]
-}>({
+} = {
   prev: [
     inputRef.value?.selectionStart,
     inputRef.value?.selectionEnd,
     inputRef.value?.selectionDirection,
   ],
-})
+}
 
 function safeInsertRule(sheet: CSSStyleSheet, rule: string) {
   try {
@@ -81,18 +80,22 @@ onMounted(() => {
   }
 
   // Previous selection
-  inputMetadataRef.value.prev = [
+  inputMetadataRef.prev = [
     input.selectionStart,
     input.selectionEnd,
-    input.selectionDirection,
+    input.selectionDirection ?? 'none',
   ]
+
+  const removeSelectionchangeListener = useEventListener(defaultDocument, 'selectionchange', onDocumentSelectionChange, {
+    capture: true,
+  })
 
   function onDocumentSelectionChange() {
     if (!input) {
       return
     }
 
-    if (document.activeElement !== input) {
+    if (defaultDocument?.activeElement !== input) {
       mirrorSelectionStart.value = null
       mirrorSelectionEnd.value = null
       return
@@ -104,7 +107,7 @@ onMounted(() => {
     const _dir = input.selectionDirection
     const _ml = input.maxLength
     const _val = input.value
-    const _prev = inputMetadataRef.value.prev
+    const _prev = inputMetadataRef.prev
 
     // Algorithm
     let start = -1
@@ -155,23 +158,21 @@ onMounted(() => {
     mirrorSelectionStart.value = s
     mirrorSelectionEnd.value = e
     // Store the previous selection value
-    inputMetadataRef.value.prev = [s, e, dir]
+    inputMetadataRef.prev = [s, e, dir]
   }
-  document.addEventListener('selectionchange', onDocumentSelectionChange, {
-    capture: true,
-  })
 
   // Set initial mirror state
   onDocumentSelectionChange()
-  if (document.activeElement === input) {
+  if (defaultDocument?.activeElement === input) {
     isFocused.value = true
   }
 
   // Apply needed styles
-  if (!document.getElementById('input-otp-style')) {
-    const styleEl = document.createElement('style')
+  if (!defaultDocument?.getElementById('input-otp-style')) {
+    // eslint-disable-next-line ts/no-non-null-asserted-optional-chain
+    const styleEl = defaultDocument?.createElement('style')!
     styleEl.id = 'input-otp-style'
-    document.head.appendChild(styleEl)
+    defaultDocument?.head.appendChild(styleEl)
 
     if (styleEl.sheet) {
       const autofillStyles
@@ -215,18 +216,17 @@ onMounted(() => {
   resizeObserver.observe(input)
 
   onUnmounted(() => {
-    document.removeEventListener(
-      'selectionchange',
-      onDocumentSelectionChange,
-      { capture: true },
-    )
+    removeSelectionchangeListener()
     resizeObserver.disconnect()
   })
 })
 
 /** Effects */
-watch([internalValue, isFocused], () => {
+watch([internalValue], () => {
   syncTimeouts(() => {
+    const input = inputRef.value
+    if (!input)
+      return
     // Forcefully remove :autofill state
     inputRef.value?.dispatchEvent(new Event('input'))
 
@@ -236,9 +236,9 @@ watch([internalValue, isFocused], () => {
     const dir = inputRef.value?.selectionDirection
     if (s !== null && e !== null) {
       // TODO: Below is expected to be nulls
-      mirrorSelectionStart.value = s!
-      mirrorSelectionEnd.value = e!
-      inputMetadataRef.value.prev = [s, e, dir]
+      mirrorSelectionStart.value = s ?? null
+      mirrorSelectionEnd.value = e ?? null
+      inputMetadataRef.prev = [s, e, dir]
     }
   })
 }, {
@@ -267,6 +267,23 @@ const pwmb = usePasswordManagerBadge({
 })
 
 /** Event handlers */
+function _beforeInputListener(e: InputEvent) {
+  if (e.inputType === 'insertText' && e.data !== null) {
+    const target = e.currentTarget as HTMLInputElement
+    const start = target.selectionStart ?? 0
+    const end = target.selectionEnd ?? 0
+    const currentValue = target.value
+    const isReplacing = start !== end
+    const newValueUncapped = isReplacing
+      ? currentValue.slice(0, start) + e.data + currentValue.slice(end)
+      : currentValue.slice(0, start) + e.data + currentValue.slice(start)
+    const newValue = newValueUncapped.slice(0, props.maxlength)
+    if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue)) {
+      e.preventDefault()
+    }
+  }
+}
+
 function _inputListener(e: Event) {
   const newValue = (e.currentTarget as HTMLInputElement).value.slice(0, props.maxlength)
   if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue)) {
@@ -281,7 +298,7 @@ function _inputListener(e: Event) {
     // selectionchange event, we'll have to dispatch it manually.
     // NOTE: The following line also triggers when cmd+A then pasting
     // a value with smaller length, which is not ideal for performance.
-    document.dispatchEvent(new Event('selectionchange'))
+    defaultDocument?.dispatchEvent(new Event('selectionchange'))
   }
 
   internalValue.value = newValue
@@ -289,10 +306,11 @@ function _inputListener(e: Event) {
 }
 
 function _focusListener() {
-  if (inputRef.value) {
-    const start = Math.min(inputRef.value.value.length, props.maxlength - 1)
-    const end = inputRef.value.value.length
-    inputRef.value?.setSelectionRange(start, end)
+  const input = inputRef.value
+  if (input) {
+    const start = Math.min(input.value.length, props.maxlength - 1)
+    const end = input.value.length
+    input.setSelectionRange(start, end)
     mirrorSelectionStart.value = start
     mirrorSelectionEnd.value = end
   }
@@ -302,7 +320,10 @@ function _focusListener() {
 // Fix iOS pasting
 function _pasteListener(e: ClipboardEvent) {
   const input = inputRef.value
-  if (!props.pasteTransformer && (!isIOS.value || !e.clipboardData || !input)) {
+  if (!input)
+    return
+
+  if (!props.pasteTransformer && (!isIOS || !e.clipboardData || !input)) {
     return
   }
 
@@ -378,21 +399,6 @@ const inputStyle = computed<StyleValue>(
     fontSize: 'var(--root-height)',
     fontFamily: 'monospace',
     fontVariantNumeric: 'tabular-nums',
-    // letterSpacing: '-1em',
-    // transform: 'scale(1.5)',
-    // paddingRight: '100%',
-    // paddingBottom: '100%',
-    // debugging purposes
-    // inset: undefined,
-    // position: undefined,
-    // color: 'black',
-    // background: 'white',
-    // opacity: '1',
-    // caretColor: 'black',
-    // padding: '0',
-    // letterSpacing: 'unset',
-    // fontSize: 'unset',
-    // paddingInline: '.5rem',
   }),
 )
 
@@ -408,7 +414,7 @@ const contextValue = computed<RenderProps>(() => {
           || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
 
       const char = internalValue.value[slotIdx] !== undefined ? internalValue.value[slotIdx] : null
-      const placeholderChar = internalValue.value[0] !== undefined ? null : props?.placeholder?.[slotIdx] ?? null
+      const placeholderChar = char ?? props?.placeholder?.[slotIdx] ?? null
 
       return {
         char,
@@ -417,7 +423,7 @@ const contextValue = computed<RenderProps>(() => {
         hasFakeCaret: isActive && char === null,
       }
     }),
-    isFocused: isFocused.value,
+    isFocused,
     isHovering: !props.disabled && isHoveringInput.value,
   }
 })
@@ -453,7 +459,8 @@ defineExpose(Object.defineProperty({}, '$el', {
         :aria-placeholder="placeholder"
         :style="inputStyle"
         :pattern="regexp?.source"
-        v-bind="{ ...inputProps, ...$attrs }"
+        v-bind="{ ...$attrs, ...inputProps }"
+        @beforeinput="_beforeInputListener"
         @mouseover="(e) => {
           isHoveringInput = true
           emit('mouseover', e)
