@@ -4,4 +4,7 @@ export {
 
 export * from './regexp'
 
-export type { OTPInputProps, OTPInputEmits, SlotProps, RenderProps } from './types'
+export { PublicVueOTPContextKey } from './symbols'
+
+export type { OTPInputEmits, OTPInputProps, RenderProps, SlotProps } from './types'
+export { useVueOTPContext } from './use-otp-context'

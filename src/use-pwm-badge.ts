@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { OTPInputProps } from './types'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 const PWM_BADGE_MARGIN_RIGHT = 18
 const PWM_BADGE_SPACE_WIDTH_PX = 40
@@ -40,7 +40,7 @@ export function usePasswordManagerBadge({
 
     const increaseWidthCase
       = (pushPasswordManagerStrategy === 'increase-width'
-      || pushPasswordManagerStrategy === 'experimental-no-flickering')
+        || pushPasswordManagerStrategy === 'experimental-no-flickering')
       && hasPWMBadge.value
       && hasPWMBadgeSpace.value
 
@@ -63,10 +63,10 @@ export function usePasswordManagerBadge({
 
     const rightCornerX
       = elementToCompare.getBoundingClientRect().left
-      + elementToCompare.offsetWidth
+        + elementToCompare.offsetWidth
     const centereredY
       = elementToCompare.getBoundingClientRect().top
-      + elementToCompare.offsetHeight / 2
+        + elementToCompare.offsetHeight / 2
     const x = rightCornerX - PWM_BADGE_MARGIN_RIGHT
     const y = centereredY
 
@@ -87,7 +87,7 @@ export function usePasswordManagerBadge({
       const sel = [input.selectionStart, input.selectionEnd]
       input.blur()
       input.focus()
-      input.setSelectionRange(sel[0], sel[1])
+      input.setSelectionRange(sel[0]!, sel[1]!)
 
       pwmMetadata.value.refocused = true
     }

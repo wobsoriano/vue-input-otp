@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue'
-import { computed, onMounted, onUnmounted, ref, useAttrs, watch, watchEffect } from 'vue'
-import type { OTPInputEmits, OTPInputProps, SlotProps } from './types'
+import type { OTPInputEmits, OTPInputProps, RenderProps } from './types'
+import { defaultDocument, defaultWindow, reactiveOmit, useEventListener, usePrevious } from '@vueuse/core'
+import { useForwardProps } from 'reka-ui'
+import { computed, onMounted, onUnmounted, provide, shallowRef, watch, watchEffect } from 'vue'
+import { NoSciptCssFallback, NOSCRIPT_CSS_FALLBACK } from './NoSciptCssFallback'
 import { REGEXP_ONLY_DIGITS } from './regexp'
+import { PublicVueOTPContextKey } from './symbols'
 import { syncTimeouts } from './sync-timeouts'
 import { usePasswordManagerBadge } from './use-pwm-badge'
-import { usePrevious } from './use-previous'
-import { NOSCRIPT_CSS_FALLBACK, NoSciptCssFallback } from './NoSciptCssFallback'
 
 defineOptions({
   name: 'OTPInput',
@@ -20,11 +22,16 @@ const props = withDefaults(defineProps<OTPInputProps>(), {
   textAlign: 'left',
   pushPasswordManagerStrategy: 'increase-width',
   noScriptCssFallback: NOSCRIPT_CSS_FALLBACK,
+  defaultValue: '',
 })
 
 const emit = defineEmits<OTPInputEmits>()
 
-const internalValue = defineModel({ default: '' })
+const [internalValue] = defineModel<string>({
+  default(props) {
+    return props.defaultValue
+  },
+})
 const previousValue = usePrevious(internalValue)
 
 const regexp = computed(() => props.pattern
@@ -34,31 +41,26 @@ const regexp = computed(() => props.pattern
   : null)
 
 /** Mirrors for UI rendering purpose only */
-const isHoveringInput = ref(false)
-const isFocused = ref(false)
-const mirrorSelectionStart = ref<number | null>(null)
-const mirrorSelectionEnd = ref<number | null>(null)
+const isHoveringInput = shallowRef(false)
+const isFocused = shallowRef(false)
+const mirrorSelectionStart = shallowRef<number | null>(null)
+const mirrorSelectionEnd = shallowRef<number | null>(null)
 
-const inputRef = ref<HTMLInputElement | null>(null)
-defineExpose({
-  ref: inputRef,
-})
+const inputRef = shallowRef<HTMLInputElement | null>(null)
 
-const containerRef = ref<HTMLDivElement | null>(null)
-// TODO: Not sure if we need this, refactor in the future
-// See https://github.com/guilhermerodz/input-otp/blob/6d74289761f3c24fbb2ab907aff481e1038b7e06/packages/input-otp/src/input.tsx#L64
-// const initialLoadRef = ref({
-//   isIOS: typeof window !== 'undefined' && window?.CSS?.supports?.('-webkit-touch-callout', 'none'),
-// })
-const inputMetadataRef = ref<{
+const containerRef = shallowRef<HTMLDivElement | null>(null)
+const isIOS = defaultWindow?.CSS?.supports?.('-webkit-touch-callout', 'none')
+
+// eslint-disable-next-line prefer-const
+let inputMetadataRef: {
   prev: [number | null | undefined, number | null | undefined, 'none' | 'forward' | 'backward' | null | undefined]
-}>({
+} = {
   prev: [
     inputRef.value?.selectionStart,
     inputRef.value?.selectionEnd,
     inputRef.value?.selectionDirection,
   ],
-})
+}
 
 function safeInsertRule(sheet: CSSStyleSheet, rule: string) {
   try {
@@ -78,18 +80,22 @@ onMounted(() => {
   }
 
   // Previous selection
-  inputMetadataRef.value.prev = [
+  inputMetadataRef.prev = [
     input.selectionStart,
     input.selectionEnd,
-    input.selectionDirection,
+    input.selectionDirection ?? 'none',
   ]
+
+  const removeSelectionchangeListener = useEventListener(defaultDocument, 'selectionchange', onDocumentSelectionChange, {
+    capture: true,
+  })
 
   function onDocumentSelectionChange() {
     if (!input) {
       return
     }
 
-    if (document.activeElement !== input) {
+    if (defaultDocument?.activeElement !== input) {
       mirrorSelectionStart.value = null
       mirrorSelectionEnd.value = null
       return
@@ -101,12 +107,13 @@ onMounted(() => {
     const _dir = input.selectionDirection
     const _ml = input.maxLength
     const _val = input.value
-    const _prev = inputMetadataRef.value.prev
+    const _prev = inputMetadataRef.prev
 
     // Algorithm
     let start = -1
     let end = -1
-    let direction: 'forward' | 'backward' | 'none'
+    // eslint-disable-next-line no-undef-init
+    let direction: 'forward' | 'backward' | 'none' | undefined = undefined
     if (_val.length !== 0 && _s !== null && _e !== null) {
       const isSingleCaret = _s === _e
       const isInsertMode = _s === _val.length && _val.length < _ml
@@ -128,7 +135,7 @@ onMounted(() => {
           if (_prev[0] !== null && _prev[1] !== null) {
             direction = c < _prev[1]! ? 'backward' : 'forward'
             const wasPreviouslyInserting
-                    = _prev[0] === _prev[1] && _prev[0]! < _ml
+              = _prev[0] === _prev[1] && _prev[0]! < _ml
             if (direction === 'backward' && !wasPreviouslyInserting) {
               offset = -1
             }
@@ -140,7 +147,6 @@ onMounted(() => {
       }
 
       if (start !== -1 && end !== -1 && start !== end) {
-        // @ts-expect-error: direction is defined
         input.setSelectionRange(start, end, direction)
       }
     }
@@ -148,32 +154,29 @@ onMounted(() => {
     // Finally, update the state
     const s = start !== -1 ? start : _s
     const e = end !== -1 ? end : _e
-    // @ts-expect-error: direction is defined
     const dir = direction ?? _dir
     mirrorSelectionStart.value = s
     mirrorSelectionEnd.value = e
     // Store the previous selection value
-    inputMetadataRef.value.prev = [s, e, dir]
+    inputMetadataRef.prev = [s, e, dir]
   }
-  document.addEventListener('selectionchange', onDocumentSelectionChange, {
-    capture: true,
-  })
 
   // Set initial mirror state
   onDocumentSelectionChange()
-  if (document.activeElement === input) {
+  if (defaultDocument?.activeElement === input) {
     isFocused.value = true
   }
 
   // Apply needed styles
-  if (!document.getElementById('input-otp-style')) {
-    const styleEl = document.createElement('style')
+  if (!defaultDocument?.getElementById('input-otp-style')) {
+    // eslint-disable-next-line ts/no-non-null-asserted-optional-chain
+    const styleEl = defaultDocument?.createElement('style')!
     styleEl.id = 'input-otp-style'
-    document.head.appendChild(styleEl)
+    defaultDocument?.head.appendChild(styleEl)
 
     if (styleEl.sheet) {
       const autofillStyles
-              = 'background: transparent !important; color: transparent !important; border-color: transparent !important; opacity: 0 !important; box-shadow: none !important; -webkit-box-shadow: none !important; -webkit-text-fill-color: transparent !important;'
+        = 'background: transparent !important; color: transparent !important; border-color: transparent !important; opacity: 0 !important; box-shadow: none !important; -webkit-box-shadow: none !important; -webkit-text-fill-color: transparent !important;'
 
       safeInsertRule(
         styleEl.sheet,
@@ -213,18 +216,17 @@ onMounted(() => {
   resizeObserver.observe(input)
 
   onUnmounted(() => {
-    document.removeEventListener(
-      'selectionchange',
-      onDocumentSelectionChange,
-      { capture: true },
-    )
+    removeSelectionchangeListener()
     resizeObserver.disconnect()
   })
 })
 
 /** Effects */
-watch([internalValue, isFocused], () => {
+watch([internalValue], () => {
   syncTimeouts(() => {
+    const input = inputRef.value
+    if (!input)
+      return
     // Forcefully remove :autofill state
     inputRef.value?.dispatchEvent(new Event('input'))
 
@@ -234,9 +236,9 @@ watch([internalValue, isFocused], () => {
     const dir = inputRef.value?.selectionDirection
     if (s !== null && e !== null) {
       // TODO: Below is expected to be nulls
-      mirrorSelectionStart.value = s!
-      mirrorSelectionEnd.value = e!
-      inputMetadataRef.value.prev = [s, e, dir]
+      mirrorSelectionStart.value = s ?? null
+      mirrorSelectionEnd.value = e ?? null
+      inputMetadataRef.prev = [s, e, dir]
     }
   })
 }, {
@@ -265,6 +267,23 @@ const pwmb = usePasswordManagerBadge({
 })
 
 /** Event handlers */
+function _beforeInputListener(e: InputEvent) {
+  if (e.inputType === 'insertText' && e.data !== null) {
+    const target = e.currentTarget as HTMLInputElement
+    const start = target.selectionStart ?? 0
+    const end = target.selectionEnd ?? 0
+    const currentValue = target.value
+    const isReplacing = start !== end
+    const newValueUncapped = isReplacing
+      ? currentValue.slice(0, start) + e.data + currentValue.slice(end)
+      : currentValue.slice(0, start) + e.data + currentValue.slice(start)
+    const newValue = newValueUncapped.slice(0, props.maxlength)
+    if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue)) {
+      e.preventDefault()
+    }
+  }
+}
+
 function _inputListener(e: Event) {
   const newValue = (e.currentTarget as HTMLInputElement).value.slice(0, props.maxlength)
   if (newValue.length > 0 && regexp.value && !regexp.value.test(newValue)) {
@@ -272,14 +291,14 @@ function _inputListener(e: Event) {
     return
   }
   const maybeHasDeleted
-          = typeof previousValue.value === 'string'
-          && newValue.length < previousValue.value.length
+    = typeof previousValue.value === 'string'
+      && newValue.length < previousValue.value.length
   if (maybeHasDeleted) {
     // Since cutting/deleting text doesn't trigger
     // selectionchange event, we'll have to dispatch it manually.
     // NOTE: The following line also triggers when cmd+A then pasting
     // a value with smaller length, which is not ideal for performance.
-    document.dispatchEvent(new Event('selectionchange'))
+    defaultDocument?.dispatchEvent(new Event('selectionchange'))
   }
 
   internalValue.value = newValue
@@ -287,10 +306,11 @@ function _inputListener(e: Event) {
 }
 
 function _focusListener() {
-  if (inputRef.value) {
-    const start = Math.min(inputRef.value.value.length, props.maxlength - 1)
-    const end = inputRef.value.value.length
-    inputRef.value?.setSelectionRange(start, end)
+  const input = inputRef.value
+  if (input) {
+    const start = Math.min(input.value.length, props.maxlength - 1)
+    const end = input.value.length
+    input.setSelectionRange(start, end)
     mirrorSelectionStart.value = start
     mirrorSelectionEnd.value = end
   }
@@ -300,11 +320,17 @@ function _focusListener() {
 // Fix iOS pasting
 function _pasteListener(e: ClipboardEvent) {
   const input = inputRef.value
-  if (!e.clipboardData || !input) {
+  if (!input)
+    return
+
+  if (!props.pasteTransformer && (!isIOS || !e.clipboardData || !input)) {
     return
   }
 
-  const content = e.clipboardData.getData('text/plain')
+  const _content = e?.clipboardData?.getData('text/plain')
+  const content = props?.pasteTransformer
+    ? props.pasteTransformer(_content)
+    : _content
   e.preventDefault()
 
   const start = inputRef.value?.selectionStart
@@ -327,20 +353,14 @@ function _pasteListener(e: ClipboardEvent) {
   const _start = Math.min(newValue.length, props.maxlength - 1)
   const _end = newValue.length
 
-  input.setSelectionRange(_start, _end)
+  input?.setSelectionRange(_start, _end)
   mirrorSelectionStart.value = _start
   mirrorSelectionEnd.value = _end
 }
 
-const attrs = useAttrs()
-const inputProps = computed(() => {
-  const { containerClass, value, ...rest } = props
-  return {
-    ...attrs, // putting attrs for now until I can extract the input props from Vue
-    ...rest,
-    pattern: regexp.value?.source,
-  }
-})
+// @ts-expect-error modelValue props from defineModel?
+const delegatedProps = reactiveOmit(props, 'containerClass', 'value', 'pattern', 'defaultValue', 'pushPasswordManagerStrategy', 'noScriptCssFallback', 'modelValue')
+const inputProps = useForwardProps(delegatedProps)
 
 /** Styles */
 const rootStyle = computed<StyleValue>(
@@ -379,43 +399,43 @@ const inputStyle = computed<StyleValue>(
     fontSize: 'var(--root-height)',
     fontFamily: 'monospace',
     fontVariantNumeric: 'tabular-nums',
-    // letterSpacing: '-1em',
-    // transform: 'scale(1.5)',
-    // paddingRight: '100%',
-    // paddingBottom: '100%',
-    // debugging purposes
-    // inset: undefined,
-    // position: undefined,
-    // color: 'black',
-    // background: 'white',
-    // opacity: '1',
-    // caretColor: 'black',
-    // padding: '0',
-    // letterSpacing: 'unset',
-    // fontSize: 'unset',
-    // paddingInline: '.5rem',
   }),
 )
 
-const contextValue = computed<SlotProps[]>(() => {
-  return Array.from({ length: Number(props.maxlength) }).map((_, slotIdx) => {
-    const isActive
-      = isFocused.value
-      && mirrorSelectionStart.value !== null
-      && mirrorSelectionEnd.value !== null
-      && ((mirrorSelectionStart.value === mirrorSelectionEnd.value
-      && slotIdx === mirrorSelectionStart.value)
-      || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
+const contextValue = computed<RenderProps>(() => {
+  return {
+    slots: Array.from({ length: Number(props.maxlength) }).map((_, slotIdx) => {
+      const isActive
+        = isFocused.value
+          && mirrorSelectionStart.value !== null
+          && mirrorSelectionEnd.value !== null
+          && ((mirrorSelectionStart.value === mirrorSelectionEnd.value
+            && slotIdx === mirrorSelectionStart.value)
+          || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
 
-    const char = internalValue.value[slotIdx] !== undefined ? internalValue.value[slotIdx] : null
+      const char = internalValue.value[slotIdx] !== undefined ? internalValue.value[slotIdx] : null
+      const placeholderChar = char ?? props?.placeholder?.[slotIdx] ?? null
 
-    return {
-      char,
-      isActive,
-      hasFakeCaret: isActive && char === null,
-    }
-  })
+      return {
+        char,
+        placeholderChar,
+        isActive,
+        hasFakeCaret: isActive && char === null,
+      }
+    }),
+    isFocused,
+    isHovering: !props.disabled && isHoveringInput.value,
+  }
 })
+
+provide(PublicVueOTPContextKey, contextValue)
+
+// reka-ui forwardRef
+defineExpose(Object.defineProperty({}, '$el', {
+  enumerable: true,
+  configurable: true,
+  get: () => inputRef,
+}))
 </script>
 
 <template>
@@ -427,16 +447,20 @@ const contextValue = computed<SlotProps[]>(() => {
     :style="rootStyle"
     :class="containerClass"
   >
-    <slot :slots="contextValue" :is-focused="isFocused" :is-hovering="!disabled && isHoveringInput" />
+    <slot :slots="contextValue.slots" :is-focused="isFocused" :is-hovering="!disabled && isHoveringInput" />
     <div style="position: absolute; inset: 0; pointer-events: none;">
       <input
         ref="inputRef"
         :value="internalValue"
         data-input-otp
+        :data-input-otp-placeholder-shown="internalValue.length === 0 || undefined"
         :data-input-otp-mss="mirrorSelectionStart"
         :data-input-otp-mse="mirrorSelectionEnd"
+        :aria-placeholder="placeholder"
         :style="inputStyle"
-        v-bind="inputProps"
+        :pattern="regexp?.source"
+        v-bind="{ ...$attrs, ...inputProps }"
+        @beforeinput="_beforeInputListener"
         @mouseover="(e) => {
           isHoveringInput = true
           emit('mouseover', e)

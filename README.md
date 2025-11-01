@@ -94,12 +94,12 @@ defineProps<SlotProps>()
 ```
 
 ```ts
+import type { ClassValue } from 'clsx'
 // tailwind.config.ts for the blinking caret animation.
 // Small utility to merge class names.
 import { clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
 
-import type { ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 const config = {
   theme: {
@@ -161,8 +161,8 @@ The root container. Define settings for the input via props. Then, pass in child
 
 ```vue
 <script setup>
-import { OTPInput } from 'vue-input-otp'
 import { ref } from 'vue'
+import { OTPInput } from 'vue-input-otp'
 
 const formRef = ref()
 const buttonRef = ref()

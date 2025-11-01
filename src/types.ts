@@ -1,3 +1,5 @@
+import type { ShallowRef } from 'vue'
+
 // Need to figure out how to import this from Vue without causing "Failed to resolve extends base type" error
 export interface InputHTMLAttributes {
   accept?: string
@@ -43,6 +45,8 @@ export interface OTPInputProps extends InputHTMLAttributes {
   containerClass?: string
   pushPasswordManagerStrategy?: 'increase-width' | 'none'
   noScriptCssFallback?: string | null
+  defaultValue?: any
+  pasteTransformer?: (pasted: string | undefined) => string
 }
 
 export interface OTPInputEmits {
@@ -57,24 +61,15 @@ export interface OTPInputEmits {
   (event: 'paste', e: ClipboardEvent): void
 }
 
-export enum SelectionType {
-  CARET = 0,
-  CHAR = 1,
-  MULTI = 2,
-}
-
-export interface Metadata {
-  lastClickTimestamp: number
-}
-
 export interface SlotProps {
   isActive: boolean
   char: string | null
+  placeholderChar: string | null
   hasFakeCaret: boolean
 }
 
 export interface RenderProps {
   slots: SlotProps[]
-  isFocused: boolean
+  isFocused: ShallowRef<boolean>
   isHovering: boolean
 }

@@ -1,3 +1,7 @@
 packages:
   - .
   - website
+
+onlyBuiltDependencies:
+  - esbuild
+  - vue-demi
