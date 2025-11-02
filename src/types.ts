@@ -1,5 +1,3 @@
-import type { ShallowRef } from 'vue'
-
 // Need to figure out how to import this from Vue without causing "Failed to resolve extends base type" error
 export interface InputHTMLAttributes {
   accept?: string
@@ -70,6 +68,6 @@ export interface SlotProps {
 
 export interface RenderProps {
   slots: SlotProps[]
-  isFocused: ShallowRef<boolean>
+  isFocused: boolean
   isHovering: boolean
 }

@@ -423,7 +423,7 @@ const contextValue = computed<RenderProps>(() => {
         hasFakeCaret: isActive && char === null,
       }
     }),
-    isFocused,
+    isFocused: isFocused.value,
     isHovering: !props.disabled && isHoveringInput.value,
   }
 })
