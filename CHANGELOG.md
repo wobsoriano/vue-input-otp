@@ -1,5 +1,11 @@
 # vue-input-otp
 
+## 0.3.0
+
+### Minor Changes
+
+- a1f17dc: Introduce `useVueOTPContext` to allow access to slots, focused and hovering states throughout the component tree.
+
 ## 0.2.2
 
 ### Patch Changes
