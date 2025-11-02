@@ -16,7 +16,6 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<OTPInputProps>(), {
-  pattern: REGEXP_ONLY_DIGITS,
   inputmode: 'numeric',
   autocomplete: 'one-time-code',
   textAlign: 'left',
