@@ -5,7 +5,6 @@ import { defaultDocument, defaultWindow, reactiveOmit, useEventListener, usePrev
 import { useForwardProps } from 'reka-ui'
 import { computed, onMounted, onUnmounted, provide, shallowRef, watch, watchEffect } from 'vue'
 import { NoSciptCssFallback, NOSCRIPT_CSS_FALLBACK } from './NoSciptCssFallback'
-import { REGEXP_ONLY_DIGITS } from './regexp'
 import { PublicVueOTPContextKey } from './symbols'
 import { syncTimeouts } from './sync-timeouts'
 import { usePasswordManagerBadge } from './use-pwm-badge'
