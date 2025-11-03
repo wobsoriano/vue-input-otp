@@ -1,5 +1,11 @@
 # vue-input-otp
 
+## 0.3.1
+
+### Patch Changes
+
+- 45e3d44: Removed the default pattern.
+
 ## 0.3.0
 
 ### Minor Changes
