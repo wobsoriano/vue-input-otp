@@ -1,7 +1,7 @@
 {
   "name": "vue-input-otp",
   "type": "module",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "packageManager": "pnpm@10.24.0",
   "description": "",
   "author": "Robert Soriano <sorianorobertc@gmail.com>",
