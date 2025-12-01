@@ -1,5 +1,11 @@
 # vue-input-otp
 
+## 0.3.2
+
+### Patch Changes
+
+- 45e8ae1: Switch to OIDC for npm publishing
+
 ## 0.3.1
 
 ### Patch Changes
