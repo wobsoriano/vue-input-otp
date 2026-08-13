@@ -6,6 +6,28 @@ const PWM_BADGE_MARGIN_RIGHT = 18
 const PWM_BADGE_SPACE_WIDTH_PX = 40
 const PWM_BADGE_SPACE_WIDTH = `${PWM_BADGE_SPACE_WIDTH_PX}px`
 
+/**
+ * Free space, in px, to the right of the container. The push strategy grows
+ * the input past the container, so the gutter has to fit inside the nearest
+ * box constraining horizontal overflow or the overhang becomes a scrollbar.
+ */
+function availableBadgeSpace(container: HTMLElement): number {
+  const containerRight = container.getBoundingClientRect().right
+
+  // The container counts too, since its own overflow clips the input inside it
+  let el: HTMLElement | null = container
+  while (el) {
+    if (getComputedStyle(el).overflowX !== 'visible') {
+      const rect = el.getBoundingClientRect()
+      return rect.left + el.clientLeft + el.clientWidth - containerRight
+    }
+    el = el.parentElement
+  }
+
+  // Unlike `window.innerWidth`, `clientWidth` excludes a vertical scrollbar
+  return document.documentElement.clientWidth - containerRight
+}
+
 const PASSWORD_MANAGERS_SELECTORS = [
   '[data-lastpass-icon-root]', // LastPass
   'com-1password-button', // 1Password
@@ -24,11 +46,6 @@ export function usePasswordManagerBadge({
   pushPasswordManagerStrategy: OTPInputProps['pushPasswordManagerStrategy']
   isFocused: Ref<boolean>
 }) {
-  const pwmMetadata = ref({
-    done: false,
-    refocused: false,
-  })
-
   const hasPWMBadge = ref(false)
   const hasPWMBadgeSpace = ref(false)
   const done = ref(false)
@@ -80,17 +97,11 @@ export function usePasswordManagerBadge({
       }
     }
 
+    // The interval's copy can be up to a second stale, so re-measure here
+    hasPWMBadgeSpace.value
+      = availableBadgeSpace(container) >= PWM_BADGE_SPACE_WIDTH_PX
     hasPWMBadge.value = true
     done.value = true
-
-    if (!pwmMetadata.value.refocused && document.activeElement === input) {
-      const sel = [input.selectionStart, input.selectionEnd]
-      input.blur()
-      input.focus()
-      input.setSelectionRange(sel[0]!, sel[1]!)
-
-      pwmMetadata.value.refocused = true
-    }
   }
 
   const checkHasSpace = () => {
@@ -99,10 +110,9 @@ export function usePasswordManagerBadge({
       return
     }
 
-    const viewportWidth = window.innerWidth
-    const distanceToRightEdge
-      = viewportWidth - container.getBoundingClientRect().right
-    hasPWMBadgeSpace.value = distanceToRightEdge >= PWM_BADGE_SPACE_WIDTH_PX
+    // Check if the badge gutter fits without overflowing or being clipped
+    hasPWMBadgeSpace.value
+      = availableBadgeSpace(container) >= PWM_BADGE_SPACE_WIDTH_PX
   }
 
   let spaceInterval: number

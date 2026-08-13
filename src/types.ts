@@ -29,6 +29,7 @@ export interface InputHTMLAttributes {
   readonly?: boolean
   required?: boolean
   size?: number
+  spellcheck?: boolean
   src?: string
   step?: number
   type?: string
@@ -45,6 +46,8 @@ export interface OTPInputProps extends InputHTMLAttributes {
   noScriptCssFallback?: string | null
   defaultValue?: any
   pasteTransformer?: (pasted: string | undefined) => string
+  /** Applied to the injected `<style>` tag, for a nonce-based `style-src` CSP. */
+  nonce?: string
 }
 
 export interface OTPInputEmits {

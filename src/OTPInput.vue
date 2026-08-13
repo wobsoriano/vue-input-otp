@@ -65,7 +65,9 @@ function safeInsertRule(sheet: CSSStyleSheet, rule: string) {
     sheet.insertRule(rule)
   }
   catch {
-    console.error('input-otp could not insert CSS rule:', rule)
+    // Cosmetic rules only, so a rejected selector never breaks the input.
+    // Warn rather than error to keep it out of Sentry and friends.
+    console.warn('input-otp could not insert CSS rule:', rule)
   }
 }
 
@@ -75,6 +77,11 @@ onMounted(() => {
 
   if (!input || !container) {
     return
+  }
+
+  // A password manager or the browser can autofill before hydration runs
+  if (internalValue.value !== input.value) {
+    internalValue.value = input.value
   }
 
   // Previous selection
@@ -170,6 +177,8 @@ onMounted(() => {
     // eslint-disable-next-line ts/no-non-null-asserted-optional-chain
     const styleEl = defaultDocument?.createElement('style')!
     styleEl.id = 'input-otp-style'
+    if (props.nonce)
+      styleEl.setAttribute('nonce', props.nonce)
     defaultDocument?.head.appendChild(styleEl)
 
     if (styleEl.sheet) {
@@ -205,23 +214,26 @@ onMounted(() => {
     if (container) {
       container.style.setProperty(
         '--root-height',
-        `${input.clientHeight}px`,
+        `${container.clientHeight}px`,
       )
     }
   }
   updateRootHeight()
-  const resizeObserver = new ResizeObserver(updateRootHeight)
-  resizeObserver.observe(input)
+  // Missing in older browsers (e.g. iOS Safari <13.4)
+  const resizeObserver = typeof ResizeObserver === 'undefined'
+    ? null
+    : new ResizeObserver(updateRootHeight)
+  resizeObserver?.observe(container)
 
   onUnmounted(() => {
     removeSelectionchangeListener()
-    resizeObserver.disconnect()
+    resizeObserver?.disconnect()
   })
 })
 
 /** Effects */
-watch([internalValue], () => {
-  syncTimeouts(() => {
+watch([internalValue], (_value, _prev, onCleanup) => {
+  const timeouts = syncTimeouts(() => {
     const input = inputRef.value
     if (!input)
       return
@@ -238,6 +250,11 @@ watch([internalValue], () => {
       mirrorSelectionEnd.value = e ?? null
       inputMetadataRef.prev = [s, e, dir]
     }
+  })
+
+  // Otherwise these can fire after unmount
+  onCleanup(() => {
+    timeouts.forEach(timeout => clearTimeout(timeout))
   })
 }, {
   immediate: true,
@@ -357,7 +374,7 @@ function _pasteListener(e: ClipboardEvent) {
 }
 
 // @ts-expect-error modelValue props from defineModel?
-const delegatedProps = reactiveOmit(props, 'containerClass', 'value', 'pattern', 'defaultValue', 'pushPasswordManagerStrategy', 'noScriptCssFallback', 'modelValue')
+const delegatedProps = reactiveOmit(props, 'containerClass', 'value', 'pattern', 'defaultValue', 'pushPasswordManagerStrategy', 'noScriptCssFallback', 'nonce', 'modelValue')
 const inputProps = useForwardProps(delegatedProps)
 
 /** Styles */
@@ -394,7 +411,7 @@ const inputStyle = computed<StyleValue>(
     boxShadow: 'none',
     lineHeight: '1',
     letterSpacing: '-.5em',
-    fontSize: 'var(--root-height)',
+    fontSize: 'var(--root-height, 16px)',
     fontFamily: 'monospace',
     fontVariantNumeric: 'tabular-nums',
   }),
@@ -412,7 +429,9 @@ const contextValue = computed<RenderProps>(() => {
           || (slotIdx >= mirrorSelectionStart.value && slotIdx < mirrorSelectionEnd.value))
 
       const char = internalValue.value[slotIdx] !== undefined ? internalValue.value[slotIdx] : null
-      const placeholderChar = char ?? props?.placeholder?.[slotIdx] ?? null
+      const placeholderChar = internalValue.value[0] !== undefined
+        ? null
+        : props?.placeholder?.[slotIdx] ?? null
 
       return {
         char,
@@ -442,6 +461,7 @@ defineExpose(Object.defineProperty({}, '$el', {
   <div
     ref="containerRef"
     data-input-otp-container
+    translate="no"
     :style="rootStyle"
     :class="containerClass"
   >
@@ -458,6 +478,7 @@ defineExpose(Object.defineProperty({}, '$el', {
         :style="inputStyle"
         :pattern="regexp?.source"
         v-bind="{ ...$attrs, ...inputProps }"
+        :spellcheck="spellcheck ?? false"
         @beforeinput="_beforeInputListener"
         @mouseover="(e) => {
           isHoveringInput = true
