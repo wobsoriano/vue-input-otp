@@ -140,13 +140,24 @@ The root container. Define settings for the input via props. Then, pass in child
 |`containerClass`|The class for the root container.|`string`|`-`|`-`|
 |`textAlign`|Where is the text located within the input. Affects click-holding or long-press behavior.|`string`|`left`, `right`, `center`|`center`|
 |`inputmode`|Virtual keyboard appearance on mobile.|`string`|`numeric`, `text`|`numeric`|
-|`pushPasswordManagerStrategy`|Detect Password Managers and shift their badges to the right side, outside the input.|`string`|`increase-width`, `none`|`increase-width`|
+|`pushPasswordManagerStrategy`|Detect Password Managers and shift their badges to the right side, outside the input. The shift is skipped when the extra 40px would not fit inside the nearest element constraining horizontal overflow.|`string`|`increase-width`, `none`|`increase-width`|
+|`spellcheck`|Browsers otherwise underline a filled code as a spelling error.|`boolean`|`-`|`false`|
+|`nonce`|Applied to the `<style>` tag this component injects, for a `style-src` Content Security Policy that requires nonces.|`string`|`-`|`-`|
 
 #### Slots
 
 |Name|Description|Props|
 |:----|:----|:----|
 |`default`|The slots to be rendered.|`slots: SlotProps[], isFocused: boolean, isHovering: boolean`|
+
+Each entry in `slots` is a `SlotProps`:
+
+|Name|Description|Type|
+|:----|:----|:----|
+|`char`|The character in this slot, or `null` when the slot is empty.|`string \| null`|
+|`placeholderChar`|The placeholder character for this slot. `null` on every slot as soon as the value is non-empty, so placeholders disappear the moment the user starts typing.|`string \| null`|
+|`isActive`|Whether the selection currently covers this slot.|`boolean`|
+|`hasFakeCaret`|Whether to render the blinking caret in this slot.|`boolean`|
 
 #### Events
 
